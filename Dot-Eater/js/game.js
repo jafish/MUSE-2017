@@ -16,42 +16,21 @@ var game = new Phaser.Game(
 
 var mainGameState = {};
 
-mainGameState.init = function () {
-    game.stage.disableVisibilityChange = true;
-    this.timeCheck = 0;
-};
-
 mainGameState.preload = function () {
     game.load.image('player', 'assets/sprites/circle.png');
 }
 
 mainGameState.create = function () {
     game.renderer.renderSession.roundPixels = true;
+    game.stage.disableVisibilityChange = true;
+    this.timeCheck = 0;
 
-    //When new player enters the game the server generates a random hex color according to this formula. This hex color is then linked to the new player object and applied as its color once said player enters the game. This same hex is also applied to the players dots.
-    var rhexString = Math.floor(Math.random() * 256).toString(16);
-    var ghexString = Math.floor(Math.random() * 256).toString(16);
-    var bhexString = Math.floor(Math.random() * 256).toString(16);
-
-    this.hexColor = ("0x" + rhexString + ghexString + bhexString);
-    console.log(this.hexColor);
+    this.playerList = {};
 
     //Start the physics
     game.physics.startSystem(Phaser.Physics.ARCADE);
 
-    // --- Player Initialization ---
-    this.player = game.add.sprite(game.width / 2, game.height / 2, 'player');
-    this.player.anchor.setTo(0.5, 0.5);
-    this.player.width = this.player.height = 50;
-    this.player.tint = this.hexColor;
-    this.player.smoothed = false;
-    this.player.alpha = 0.85;
-    game.physics.arcade.enable(this.player);
-    // DONT FORGET THE TEXTURE setCircle expects a radius sized relative to the sprite's texture (i.e. the original image file)
-    // Since our circle is 400x400 px, the radius given to setCircle should be 200
-
-    this.player.body.setCircle(200);
-    // --- End Player Initialization ---
+    // Player Initialization has moved to addNewPlayer
 
     // Dots
     this.dotGroup = game.add.group();
@@ -81,13 +60,29 @@ mainGameState.create = function () {
     Client.askNewPlayer();
 };
 
+mainGameState.addNewPlayer = function (id, color, size, x, y) {
+    // --- Player Initialization ---
+    mainGameState.playerList[id] = game.add.sprite(x, y, 'player');
+    mainGameState.playerList[id].anchor.setTo(0.5, 0.5);
+    mainGameState.playerList[id].width = mainGameState.playerList[id].height = size;
+    mainGameState.playerList[id].tint = color;
+    mainGameState.playerList[id].smoothed = false;
+    mainGameState.playerList[id].alpha = 0.85;
+    game.physics.arcade.enable(mainGameState.playerList[id]);
+    // DONT FORGET THE TEXTURE setCircle expects a radius sized relative to the sprite's texture (i.e. the original image file)
+    // Since our circle is 400x400 px, the radius given to setCircle should be 200
+
+    mainGameState.playerList[id].body.setCircle(200);
+    // --- End Player Initialization ---
+};
+
 mainGameState.update = function () {
-    this.moveCircle();
-    this.growCircle();
+    //this.moveCircle();
+    //this.growCircle();
 
     if (1000 < game.time.now - this.timeCheck) {
         // allow dropDotFn to run
-        this.dropDotFn();
+        //this.dropDotFn();
     }
 };
 
@@ -101,22 +96,22 @@ mainGameState.growCircle = function () {
     }
 };
 
-mainGameState.dropDotFn = function () {
-    if (
-        this.dotButton.dropDot.isDown &&
-        this.player.width > 40
-    ) {
-        this.player.width = this.player.width - 75;
-        this.player.height = this.player.height - 75;
-        this.timeCheck = game.time.now;
-
-        // Drop a dot and add it to the group
-        var newdot = game.add.sprite(this.player.x, this.player.y, 'player', 0, this.dotGroup);
-        newdot.width = newdot.height = DOT_SIZE;
-        newdot.anchor.setTo(0.5, 0.5);
-        newdot.tint = this.hexColor;
-    }
-};
+//mainGameState.dropDotFn = function () {
+//    if (
+//        this.dotButton.dropDot.isDown &&
+//        this.player.width > 40
+//    ) {
+//        this.player.width = this.player.width - 75;
+//        this.player.height = this.player.height - 75;
+//        this.timeCheck = game.time.now;
+//
+//        // Drop a dot and add it to the group
+//        var newdot = game.add.sprite(this.player.x, this.player.y, 'player', 0, this.dotGroup);
+//        newdot.width = newdot.height = DOT_SIZE;
+//        newdot.anchor.setTo(0.5, 0.5);
+//        newdot.tint = this.hexColor;
+//    }
+//};
 
 //This function is intended to be able to move our circle.
 mainGameState.moveCircle = function () {
