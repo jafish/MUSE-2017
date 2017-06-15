@@ -22,9 +22,13 @@ Client.socket.on('allplayers', function (data) {
     }
 });
 
-Client.sendArrow = function (arrow) {
-    Client.socket.emit('arrowPressed', arrow);
-};
+Client.socket.on('you', function (data) {
+    mainGameState.setID(data);
+});
+
+//Client.sendArrow = function (arrow) {
+//    Client.socket.emit('arrowPressed', arrow);
+//};
 
 Client.socket.on('move', function (data) {
     mainGameState.movePlayer(data.id, data.x, data.y);

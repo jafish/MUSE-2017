@@ -7,6 +7,9 @@ const UP_ARROW = 0;
 const RIGHT_ARROW = 1;
 const DOWN_ARROW = 2;
 const LEFT_ARROW = 3;
+const MOVEMENT = 7;
+
+var myPlayerID = -1;
 
 var game = new Phaser.Game(
     24 * 32,
@@ -81,7 +84,7 @@ mainGameState.addNewPlayer = function (id, color, size, x, y) {
 };
 
 mainGameState.update = function () {
-    this.initiateMove();
+    this.movePlayer();
     //this.growCircle();
 
     if (1000 < game.time.now - this.timeCheck) {
@@ -118,31 +121,42 @@ mainGameState.growCircle = function () {
 //};
 
 //This function is intended to be able to move our circle.
-mainGameState.initiateMove = function () {
+mainGameState.movePlayer = function () {
+
+    // If the id is not received by the client, then do nothing
+    if (myPlayerID >= 0) {
+        var player = this.playerList[myPlayerID];
+
+        if (this.cursor.right.isDown || this.wasd.right.isDown) {
+            player.x += MOVEMENT;
+        } else if (this.cursor.left.isDown || this.wasd.left.isDown) {
+            player.x -= MOVEMENT;
+        }
+
+        if (this.cursor.up.isDown || this.wasd.up.isDown) {
+            player.y -= MOVEMENT;
+        } else if (this.cursor.down.isDown || this.wasd.down.isDown) {
+            player.y += MOVEMENT;
+        }
+    }
     // TODO: Fix diagonal too-fast-ness
-    if (this.cursor.right.isDown || this.wasd.right.isDown) {
-        Client.sendArrow(RIGHT_ARROW);
-    } else if (this.cursor.left.isDown || this.wasd.left.isDown) {
-        Client.sendArrow(LEFT_ARROW);
-    }
 
-    if (this.cursor.up.isDown || this.wasd.up.isDown) {
-        Client.sendArrow(UP_ARROW);
-    } else if (this.cursor.down.isDown || this.wasd.down.isDown) {
-        Client.sendArrow(DOWN_ARROW);
-    }
 };
+//
+//mainGameState.movePlayer = function (id, x, y) {
+//    // Get the player with incoming id from the list
+//    var player = this.playerList[id];
+//    console.log(player);
+//
+//    // Update its local position
+//    if (player != null) {
+//        player.x = x;
+//        player.y = y;
+//    }
+//}
 
-mainGameState.movePlayer = function (id, x, y) {
-    // Get the player with incoming id from the list
-    var player = this.playerList[id];
-    console.log(player);
-
-    // Update its local position
-    if (player != null) {
-        player.x = x;
-        player.y = y;
-    }
+mainGameState.setID = function (id) {
+    myPlayerID = id;
 }
 
 mainGameState.render = function () {
