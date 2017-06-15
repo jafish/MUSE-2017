@@ -1,6 +1,6 @@
 // For server, need to add + ":8081" to address until we figure
 // out WTF is going on with socket.io
-var address = window.location.origin;
+var address = window.location.origin + ":8081";
 
 var Client = {};
 Client.socket = io.connect(address);
@@ -16,8 +16,16 @@ Client.socket.on('newplayer', function (data) {
 
 
 Client.socket.on('allplayers', function (data) {
-    console.log(data);
+    //console.log(data);
     for (var i = 0; i < data.length; i++) {
         mainGameState.addNewPlayer(data[i].id, data[i].color, data[i].size, data[i].x, data[i].y)
     }
+});
+
+Client.sendArrow = function (arrow) {
+    Client.socket.emit('arrowPressed', arrow);
+};
+
+Client.socket.on('move', function (data) {
+    mainGameState.movePlayer(data.id, data.x, data.y);
 });

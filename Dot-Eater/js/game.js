@@ -3,6 +3,10 @@
 // Game File
 
 const DOT_SIZE = 10;
+const UP_ARROW = 0;
+const RIGHT_ARROW = 1;
+const DOWN_ARROW = 2;
+const LEFT_ARROW = 3;
 
 var game = new Phaser.Game(
     24 * 32,
@@ -77,7 +81,7 @@ mainGameState.addNewPlayer = function (id, color, size, x, y) {
 };
 
 mainGameState.update = function () {
-    //this.moveCircle();
+    this.initiateMove();
     //this.growCircle();
 
     if (1000 < game.time.now - this.timeCheck) {
@@ -114,20 +118,30 @@ mainGameState.growCircle = function () {
 //};
 
 //This function is intended to be able to move our circle.
-mainGameState.moveCircle = function () {
+mainGameState.initiateMove = function () {
     // TODO: Fix diagonal too-fast-ness
     if (this.cursor.right.isDown || this.wasd.right.isDown) {
-        this.player.position.x += 7;
+        Client.sendArrow(RIGHT_ARROW);
     } else if (this.cursor.left.isDown || this.wasd.left.isDown) {
-        this.player.position.x += -7;
+        Client.sendArrow(LEFT_ARROW);
     }
 
     if (this.cursor.up.isDown || this.wasd.up.isDown) {
-        this.player.position.y += -7;
+        Client.sendArrow(UP_ARROW);
     } else if (this.cursor.down.isDown || this.wasd.down.isDown) {
-        this.player.position.y += 7;
+        Client.sendArrow(DOWN_ARROW);
     }
 };
+
+mainGameState.movePlayer = function (id, x, y) {
+    // Get the player with incoming id from the list
+    var player = this.playerList[id];
+    console.log(player);
+
+    // Update its local position
+    player.x = x;
+    player.y = y;
+}
 
 mainGameState.render = function () {
     //game.debug.body(this.player);
