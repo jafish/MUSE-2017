@@ -47,27 +47,26 @@ io.on('connection', function (socket) {
         socket.emit('allplayers', getAllPlayers());
         //console.log(getAllPlayers());
         socket.broadcast.emit('newplayer', socket.player);
-
-        socket.on('arrowPressed', function (data) {
-            console.log('Arrow pressed was ' + data);
-            switch (data) {
-                case UP_ARROW:
-                    socket.player.y -= MOVEMENT;
-                    break;
-                case RIGHT_ARROW:
-                    socket.player.x += MOVEMENT;
-                    break;
-                case DOWN_ARROW:
-                    socket.player.y += MOVEMENT;
-                    break;
-                case LEFT_ARROW:
-                    socket.player.x -= MOVEMENT;
-                    break;
-                default:
-                    console.log("I don't recognize this arrow.");
-            }
-            io.emit('move', socket.player);
-        });
+    });
+    socket.on('arrowPressed', function (data) {
+        //console.log('Arrow pressed was ' + data);
+        switch (data) {
+            case UP_ARROW:
+                socket.player.y -= MOVEMENT;
+                break;
+            case RIGHT_ARROW:
+                socket.player.x += MOVEMENT;
+                break;
+            case DOWN_ARROW:
+                socket.player.y += MOVEMENT;
+                break;
+            case LEFT_ARROW:
+                socket.player.x -= MOVEMENT;
+                break;
+            default:
+                console.log("I don't recognize this arrow.");
+        }
+        io.emit('move', socket.player);
     });
 });
 

@@ -139,8 +139,10 @@ mainGameState.movePlayer = function (id, x, y) {
     console.log(player);
 
     // Update its local position
-    player.x = x;
-    player.y = y;
+    if (player != null) {
+        player.x = x;
+        player.y = y;
+    }
 }
 
 mainGameState.render = function () {
