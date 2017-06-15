@@ -10,6 +10,10 @@ Client.askNewPlayer = function () {
     //console.log("Sending new player");
 }
 
+Client.updatePosition = function (data) {
+    Client.socket.emit('move', data);
+}
+
 Client.socket.on('newplayer', function (data) {
     mainGameState.addNewPlayer(data.id, data.color, data.size, data.x, data.y);
 });
@@ -26,10 +30,6 @@ Client.socket.on('you', function (data) {
     mainGameState.setID(data);
 });
 
-//Client.sendArrow = function (arrow) {
-//    Client.socket.emit('arrowPressed', arrow);
-//};
-
 Client.socket.on('move', function (data) {
-    mainGameState.movePlayer(data.id, data.x, data.y);
+    mainGameState.updateOtherPlayer(data.id, data.x, data.y);
 });

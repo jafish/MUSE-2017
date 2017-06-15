@@ -126,34 +126,47 @@ mainGameState.movePlayer = function () {
     // If the id is not received by the client, then do nothing
     if (myPlayerID >= 0) {
         var player = this.playerList[myPlayerID];
+        var moved = false;
 
         if (this.cursor.right.isDown || this.wasd.right.isDown) {
             player.x += MOVEMENT;
+            moved = true;
         } else if (this.cursor.left.isDown || this.wasd.left.isDown) {
             player.x -= MOVEMENT;
+            moved = true;
         }
 
         if (this.cursor.up.isDown || this.wasd.up.isDown) {
             player.y -= MOVEMENT;
+            moved = true;
         } else if (this.cursor.down.isDown || this.wasd.down.isDown) {
             player.y += MOVEMENT;
+            moved = true;
+        }
+
+        if (moved) {
+            // Send the id and position of the player
+            Client.updatePosition({
+                x: player.x,
+                y: player.y
+            });
         }
     }
     // TODO: Fix diagonal too-fast-ness
 
 };
-//
-//mainGameState.movePlayer = function (id, x, y) {
-//    // Get the player with incoming id from the list
-//    var player = this.playerList[id];
-//    console.log(player);
-//
-//    // Update its local position
-//    if (player != null) {
-//        player.x = x;
-//        player.y = y;
-//    }
-//}
+
+mainGameState.updateOtherPlayer = function (id, x, y) {
+    // Get the player with incoming id from the list
+    var player = this.playerList[id];
+    console.log(player);
+
+    // Update its local position
+    if (player != null) {
+        player.x = x;
+        player.y = y;
+    }
+}
 
 mainGameState.setID = function (id) {
     myPlayerID = id;
