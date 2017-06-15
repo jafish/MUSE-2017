@@ -85,7 +85,7 @@ mainGameState.addNewPlayer = function (id, color, size, x, y) {
 
 mainGameState.update = function () {
     this.movePlayer();
-    //this.growCircle();
+    this.growCircle();
 
     if (1000 < game.time.now - this.timeCheck) {
         // allow dropDotFn to run
@@ -94,31 +94,40 @@ mainGameState.update = function () {
 };
 
 mainGameState.growCircle = function () {
-    if (this.player.width < 400) {
-        this.player.width += 01;
-        this.player.height += 01;
-    } else {
-        this.player.width = 400;
-        this.player.height = 400;
-    }
+    if (myPlayerID >= 0) {
+        if (this.playerList[myPlayerID].width < 400) {
+            this.playerList[myPlayerID].width += 01;
+            this.playerList[myPlayerID].height += 01;
+            Client.updateSize(this.playerList[myPlayerID].width);
+        } else {
+            this.playerList[myPlayerID].width = 400;
+            this.playerList[myPlayerID].height = 400;
+        }
+    };
 };
 
-//mainGameState.dropDotFn = function () {
-//    if (
-//        this.dotButton.dropDot.isDown &&
-//        this.player.width > 40
-//    ) {
-//        this.player.width = this.player.width - 75;
-//        this.player.height = this.player.height - 75;
-//        this.timeCheck = game.time.now;
-//
-//        // Drop a dot and add it to the group
-//        var newdot = game.add.sprite(this.player.x, this.player.y, 'player', 0, this.dotGroup);
-//        newdot.width = newdot.height = DOT_SIZE;
-//        newdot.anchor.setTo(0.5, 0.5);
-//        newdot.tint = this.hexColor;
-//    }
-//};
+mainGameState.updateOtherSizes = function (id, size) {
+    var player = this.playerList[id];
+    player.width = player.height = size;
+};
+
+
+/*mainGameState.dropDotFn = function () {
+    if (
+        this.dotButton.dropDot.isDown &&
+        this.player.width > 40
+    ) {
+        this.player.width = this.player.width - 75;
+        this.player.height = this.player.height - 75;
+        this.timeCheck = game.time.now;
+
+        // Drop a dot and add it to the group
+        var newdot = game.add.sprite(this.player.x, this.player.y, 'player', 0, this.dotGroup);
+        newdot.width = newdot.height = DOT_SIZE;
+        newdot.anchor.setTo(0.5, 0.5);
+        newdot.tint = this.hexColor;
+    }
+};*/
 
 //This function is intended to be able to move our circle.
 mainGameState.movePlayer = function () {

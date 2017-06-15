@@ -14,6 +14,11 @@ Client.updatePosition = function (data) {
     Client.socket.emit('move', data);
 }
 
+Client.updateSize = function (data) {
+    Client.socket.emit('grow', data);
+
+}
+
 Client.socket.on('newplayer', function (data) {
     mainGameState.addNewPlayer(data.id, data.color, data.size, data.x, data.y);
 });
@@ -32,6 +37,10 @@ Client.socket.on('you', function (data) {
 
 Client.socket.on('move', function (data) {
     mainGameState.updateOtherPlayer(data.id, data.x, data.y);
+});
+
+Client.socket.on('grow', function (data) {
+    mainGameState.updateOtherSizes(data.id, data.size);
 });
 
 Client.socket.on('remove', function (id) {
