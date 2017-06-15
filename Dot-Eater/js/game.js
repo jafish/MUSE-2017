@@ -172,6 +172,11 @@ mainGameState.setID = function (id) {
     myPlayerID = id;
 }
 
+mainGameState.removePlayer = function (id) {
+    this.playerList[id].destroy();
+    delete this.playerList[id];
+};
+
 mainGameState.render = function () {
     //game.debug.body(this.player);
 }

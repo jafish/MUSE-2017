@@ -48,12 +48,17 @@ io.on('connection', function (socket) {
         socket.emit('you', socket.player.id);
         //console.log(getAllPlayers());
         socket.broadcast.emit('newplayer', socket.player);
-    });
-    socket.on('move', function (data) {
-        // Update this player's recorded position in server's socket object
-        socket.player.x = data.x;
-        socket.player.y = data.y;
-        socket.broadcast.emit('move', socket.player);
+
+        socket.on('move', function (data) {
+            // Update this player's recorded position in server's socket object
+            socket.player.x = data.x;
+            socket.player.y = data.y;
+            socket.broadcast.emit('move', socket.player);
+        });
+
+        socket.on('disconnect', function () {
+            io.emit('remove', socket.player.id);
+        });
     });
 });
 

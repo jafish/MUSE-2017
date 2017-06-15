@@ -33,3 +33,7 @@ Client.socket.on('you', function (data) {
 Client.socket.on('move', function (data) {
     mainGameState.updateOtherPlayer(data.id, data.x, data.y);
 });
+
+Client.socket.on('remove', function (id) {
+    mainGameState.removePlayer(id);
+});
