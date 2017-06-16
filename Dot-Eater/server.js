@@ -23,7 +23,7 @@ app.get('/', function (req, res) {
 
 httpServer.lastPlayerID = 0;
 
-httpServer.listen(8081, function () {
+httpServer.listen(8137, function () {
     console.log('Listening on ' + httpServer.address().port);
 });
 
@@ -40,7 +40,7 @@ io.on('connection', function (socket) {
         socket.player = {
             id: httpServer.lastPlayerID++,
             color: hexColor,
-            size: 50,
+            size: 60,
             x: randomInt(100, 400),
             y: randomInt(100, 400)
         };
@@ -54,6 +54,22 @@ io.on('connection', function (socket) {
             socket.player.x = data.x;
             socket.player.y = data.y;
             socket.broadcast.emit('move', socket.player);
+        });
+
+        //Hear addDot from the client, send addDot to all other clients
+        socket.on('addDot', function (data) {
+            socket.broadcast.emit('addDot', data);
+        });
+        
+        //Hear sendSize from the client, send relaySize to all other clients
+        socket.on('sendSm', function (data) {
+            socket.player.height = data.height;
+            socket.broadcast.emit('relaySm', socket.player);
+        });
+        
+        socket.on('sendBi', function (data) {
+            socket.player.width = data.width
+            socket.broadcast.emit('relayBi', socket.player);
         });
 
         socket.on('disconnect', function () {
