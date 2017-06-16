@@ -92,7 +92,7 @@ mainGameState.addNewPlayer = function (id, color, size, x, y) {
 };
 
 mainGameState.update = function () {
-    game.physics.arcade.overlap(this.playerList[myPlayerID], this.otherDotGroup.children, mainGameState.eatDot(), null, this);
+    //game.physics.arcade.overlap(this.playerList[myPlayerID], this.otherDotGroup.children, mainGameState.eatDot(), null, this);
 
     this.movePlayer();
     this.growCircle();
@@ -179,7 +179,7 @@ mainGameState.spawnOtherDots = function (x, y, color) {
 mainGameState.eatDot = function (player, dot) {
     //this should send the dot that was overlapped with
     //the overlapped dot's x, y, and color will be sent to the client
-    console.log(dot);
+   // console.log(dot);
 };
 
 
@@ -243,17 +243,22 @@ mainGameState.removePlayer = function (id) {
 
 
 mainGameState.removeDots = function (color) {
-    console.log("array before" + this.otherDotGroup.children);
-    console.log("array length before" + this.otherDotGroup.children.length);
-    for (var i = 0; i <= this.otherDotGroup.children.length - 1; i++) {
-        if (this.otherDotGroup.children[i].color = color) {
-            this.otherDotGroup.children[i].destroy();
-            this.otherDotGroup.children.splice(this.otherDotGroup.children[i], 1);
+ console.log("array before" + this.otherDotGroup.children);
+ console.log("array length before"+ this.otherDotGroup.children.length);
+    for (i = this.otherDotGroup.children.length-1; i >= 0; i--) {
+    console.log(this.otherDotGroup.children[1]);
+    console.log(color);
+    if (this.otherDotGroup.children[i]) {
+            if (this.otherDotGroup.children[i].tint == color) {
+                this.otherDotGroup.children[i].destroy();
+                this.otherDotGroup.children.splice(this.otherDotGroup.children[i], 1);
+        };
         };
     };
     console.log("array after" + this.otherDotGroup.children);
     console.log("array length after" + this.otherDotGroup.children.length);
 };
+
 
 mainGameState.render = function () {
     //game.debug.body(this.player);

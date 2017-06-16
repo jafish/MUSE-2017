@@ -83,7 +83,7 @@ io.on('connection', function (socket) {
         socket.on('disconnect', function () {
             io.emit('remove', socket.player.id);
             for (var i = 0; i < httpServer.dotArray.length; i++) {
-                if (http.Server.dotArray[i] != null) {
+                if (httpServer.dotArray.length[i]) {
                     if (httpServer.dotArray[i].color == socket.player.color) {
                         httpServer.dotArray.splice(httpServer.dotArray[i], 1);
                     };
@@ -93,7 +93,6 @@ io.on('connection', function (socket) {
         });
     });
 });
-
 
 function getAllPlayers() {
     var collectedPlayers = [];
