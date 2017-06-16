@@ -11,6 +11,9 @@ const MOVEMENT = 7;
 
 var myPlayerID = -1;
 
+var mydotIDs = 0;
+var otherdotIDs = 0;
+
 var game = new Phaser.Game(
     24 * 32,
     17 * 32,
@@ -24,7 +27,7 @@ var game = new Phaser.Game(
 var mainGameState = {};
 
 mainGameState.preload = function () {
-    game.load.image('player', 'assets/sprites/circle.png');
+    game.load.image('player', 'assets/sprites/circle2.png');
 }
 
 mainGameState.create = function () {
@@ -34,13 +37,17 @@ mainGameState.create = function () {
 
     this.playerList = {};
 
+    this.myDotObjects = {};
+
+    this.myDotGroup = game.add.group();
+
+    this.otherDotObjects = {};
+    this.otherDotGroup = game.add.group();
+
     //Start the physics
     game.physics.startSystem(Phaser.Physics.ARCADE);
 
     // Player Initialization has moved to addNewPlayer
-
-    // Dots
-    this.dotGroup = game.add.group();
 
     //Nice dusty lavender background, instead of black.
     game.stage.backgroundColor = "#6d5f77";
@@ -80,25 +87,29 @@ mainGameState.addNewPlayer = function (id, color, size, x, y) {
     // Since our circle is 400x400 px, the radius given to setCircle should be 200
 
     mainGameState.playerList[id].body.setCircle(200);
+
     // --- End Player Initialization ---
 };
 
 mainGameState.update = function () {
-    this.movePlayer();
-    this.growCircle();
+    game.physics.arcade.overlap(this.playerList[myPlayerID], this.otherDotGroup.children, mainGameState.eatDot());
+};
 
-    if (1000 < game.time.now - this.timeCheck) {
-        // allow dropDotFn to run
-        this.dropDotFn();
-    }
+this.movePlayer();
+this.growCircle();
+
+if (1000 < game.time.now - this.timeCheck) {
+    // allow dropDotFn to run
+    this.shrinkDotFn();
+}
 };
 
 mainGameState.growCircle = function () {
     if (myPlayerID >= 0) {
         var player = this.playerList[myPlayerID];
         if (player.width < 400) {
-            player.width += .5;
-            player.height += .5;
+            player.width += .25;
+            player.height += .25;
             Client.updateSize(player.width);
         } else {
             player.width = 400;
@@ -114,22 +125,62 @@ mainGameState.updateOtherSizes = function (id, size) {
     }
 };
 
-
-mainGameState.dropDotFn = function () {
+mainGameState.shrinkDotFn = function () {
     if (myPlayerID >= 0) {
         var player = this.playerList[myPlayerID];
+        var playercolor = player.tint;
+        if (player.width <= 60) {
+            player.width = 60
+            player.height = 60;
+        }
         if (
             this.dotButton.dropDot.isDown &&
-            player.width > 40
+            player.width > 60
         ) {
+
+            //Shrink Player
             player.width = player.width - 75;
             player.height = player.height - 75;
             this.timeCheck = game.time.now;
             Client.shrinkPlayer(player.width);
 
+
+            //Spawn Dot
+            this.myDotObjects[mydotIDs] = game.add.sprite(player.x, player.y, 'player');
+            this.myDotObjects[mydotIDs].anchor.setTo(0.5, 0.5);
+            this.myDotObjects[mydotIDs].width = this.myDotObjects[mydotIDs].height = 25;
+            this.myDotObjects[mydotIDs].tint = playercolor;
+            this.myDotObjects[mydotIDs].smoothed = false;
+            game.physics.arcade.enable(this.myDotObjects[mydotIDs]);
+            this.myDotObjects[mydotIDs].body.setCircle(200);
+            this.myDotGroup.add(this.myDotObjects[mydotIDs]);
+            console.log(this.myDotGroup.children[mydotIDs].x);
+            Client.sentDotLocation({
+                x: this.myDotGroup.children[mydotIDs].x,
+                y: this.myDotGroup.children[mydotIDs].y,
+                color: playercolor
+            });
+            mydotIDs++;
         };
     };
 };
+
+mainGameState.spawnOtherDots = function (x, y, color) {
+    this.otherDotObjects[otherdotIDs] = game.add.sprite(x, y, 'player');
+    this.otherDotObjects[otherdotIDs].anchor.setTo(0.5, 0.5);
+    this.otherDotObjects[otherdotIDs].width = this.otherDotObjects[otherdotIDs].height = 25;
+    this.otherDotObjects[otherdotIDs].tint = color;
+    this.otherDotObjects[otherdotIDs].smoothed = false;
+    game.physics.arcade.enable(this.otherDotObjects[otherdotIDs]);
+    this.otherDotObjects[otherdotIDs].body.setCircle(200);
+    this.otherDotGroup.add(this.otherDotObjects[otherdotIDs]);
+    otherdotIDs++;
+};
+
+mainGameState.eatDot = function () {
+    console.log(this.otherDotGroup.children);
+};
+
 
 //This function is intended to be able to move our circle.
 mainGameState.movePlayer = function () {

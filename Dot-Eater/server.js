@@ -66,6 +66,10 @@ io.on('connection', function (socket) {
             socket.broadcast.emit('shrink', socket.player);
         });
 
+        socket.on('spawnDot', function (data) {
+            socket.broadcast.emit('spawnDot', data)
+        });
+
         socket.on('disconnect', function () {
             io.emit('remove', socket.player.id);
         });

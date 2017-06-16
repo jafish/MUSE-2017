@@ -22,6 +22,10 @@ Client.shrinkPlayer = function (data) {
     Client.socket.emit('shrink', data);
 }
 
+Client.sentDotLocation = function (data) {
+    Client.socket.emit('spawnDot', data);
+}
+
 Client.socket.on('newplayer', function (data) {
     mainGameState.addNewPlayer(data.id, data.color, data.size, data.x, data.y);
 });
@@ -48,6 +52,11 @@ Client.socket.on('grow', function (data) {
 
 Client.socket.on('shrink', function (data) {
     mainGameState.updateOtherSizes(data.id, data.size);
+});
+
+Client.socket.on('spawnDot', function (data) {
+    mainGameState.spawnOtherDots(data.x, data.y, data.color);
+
 });
 
 Client.socket.on('remove', function (id) {
