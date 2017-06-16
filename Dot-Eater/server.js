@@ -22,6 +22,7 @@ app.get('/', function (req, res) {
 });
 
 httpServer.lastPlayerID = 0;
+httpServer.dotArray = [];
 
 httpServer.listen(8081, function () {
     console.log('Listening on ' + httpServer.address().port);
@@ -45,6 +46,7 @@ io.on('connection', function (socket) {
             y: randomInt(100, 400)
         };
         socket.emit('allplayers', getAllPlayers());
+        socket.emit('allDots', httpServer.dotArray);
         socket.emit('you', socket.player.id);
         //console.log(getAllPlayers());
         socket.broadcast.emit('newplayer', socket.player);
@@ -67,14 +69,31 @@ io.on('connection', function (socket) {
         });
 
         socket.on('spawnDot', function (data) {
+            var dot = {
+                x: data.x,
+                y: data.y,
+                color: data.color
+            }
+            httpServer.dotArray.push(dot);
             socket.broadcast.emit('spawnDot', data)
         });
 
+        //server will compare the x y and color with each member of the dotArray. When the dot is found it removes it from the array, sends the data back to client. 
+
         socket.on('disconnect', function () {
             io.emit('remove', socket.player.id);
+            for (var i = 0; i < httpServer.dotArray.length; i++) {
+                if (http.Server.dotArray[i] != null) {
+                    if (httpServer.dotArray[i].color == socket.player.color) {
+                        httpServer.dotArray.splice(httpServer.dotArray[i], 1);
+                    };
+                };
+            };
+            io.emit('removeDots', socket.player.color);
         });
     });
 });
+
 
 function getAllPlayers() {
     var collectedPlayers = [];

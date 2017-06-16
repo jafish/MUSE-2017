@@ -92,16 +92,15 @@ mainGameState.addNewPlayer = function (id, color, size, x, y) {
 };
 
 mainGameState.update = function () {
-    game.physics.arcade.overlap(this.playerList[myPlayerID], this.otherDotGroup.children, mainGameState.eatDot());
-};
+    game.physics.arcade.overlap(this.playerList[myPlayerID], this.otherDotGroup.children, mainGameState.eatDot(), null, this);
 
-this.movePlayer();
-this.growCircle();
+    this.movePlayer();
+    this.growCircle();
 
-if (1000 < game.time.now - this.timeCheck) {
-    // allow dropDotFn to run
-    this.shrinkDotFn();
-}
+    if (1000 < game.time.now - this.timeCheck) {
+        // allow dropDotFn to run
+        this.shrinkDotFn();
+    }
 };
 
 mainGameState.growCircle = function () {
@@ -139,8 +138,8 @@ mainGameState.shrinkDotFn = function () {
         ) {
 
             //Shrink Player
-            player.width = player.width - 75;
-            player.height = player.height - 75;
+            player.width = player.width - 20;
+            player.height = player.height - 20;
             this.timeCheck = game.time.now;
             Client.shrinkPlayer(player.width);
 
@@ -177,8 +176,10 @@ mainGameState.spawnOtherDots = function (x, y, color) {
     otherdotIDs++;
 };
 
-mainGameState.eatDot = function () {
-    console.log(this.otherDotGroup.children);
+mainGameState.eatDot = function (player, dot) {
+    //this should send the dot that was overlapped with
+    //the overlapped dot's x, y, and color will be sent to the client
+    console.log(dot);
 };
 
 
@@ -233,9 +234,25 @@ mainGameState.setID = function (id) {
     myPlayerID = id;
 }
 
+//When receiving data of dot ot be received the group will be looped through finding the matching dot. then that dot will be destroyed
+
 mainGameState.removePlayer = function (id) {
     this.playerList[id].destroy();
     delete this.playerList[id];
+};
+
+
+mainGameState.removeDots = function (color) {
+    console.log("array before" + this.otherDotGroup.children);
+    console.log("array length before" + this.otherDotGroup.children.length);
+    for (var i = 0; i <= this.otherDotGroup.children.length - 1; i++) {
+        if (this.otherDotGroup.children[i].color = color) {
+            this.otherDotGroup.children[i].destroy();
+            this.otherDotGroup.children.splice(this.otherDotGroup.children[i], 1);
+        };
+    };
+    console.log("array after" + this.otherDotGroup.children);
+    console.log("array length after" + this.otherDotGroup.children.length);
 };
 
 mainGameState.render = function () {

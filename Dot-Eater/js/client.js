@@ -26,16 +26,23 @@ Client.sentDotLocation = function (data) {
     Client.socket.emit('spawnDot', data);
 }
 
+//The client will receive the data, send the data to the server
+
 Client.socket.on('newplayer', function (data) {
     mainGameState.addNewPlayer(data.id, data.color, data.size, data.x, data.y);
 });
 
 
 Client.socket.on('allplayers', function (data) {
-    //console.log(data);
     for (var i = 0; i < data.length; i++) {
         mainGameState.addNewPlayer(data[i].id, data[i].color, data[i].size, data[i].x, data[i].y)
     }
+});
+
+Client.socket.on('allDots', function (data) {
+    for (var i = 0; i < data.length; i++) {
+        mainGameState.spawnOtherDots(data[i].x, data[i].y, data[i].color);
+    };
 });
 
 Client.socket.on('you', function (data) {
@@ -59,6 +66,12 @@ Client.socket.on('spawnDot', function (data) {
 
 });
 
+//On receiving removed dot data from server the client will send the data back to the game 
+
 Client.socket.on('remove', function (id) {
     mainGameState.removePlayer(id);
+});
+
+Client.socket.on('removeDots', function (color) {
+    mainGameState.removeDots(color);
 });
