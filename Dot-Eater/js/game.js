@@ -89,45 +89,47 @@ mainGameState.update = function () {
 
     if (1000 < game.time.now - this.timeCheck) {
         // allow dropDotFn to run
-        //this.dropDotFn();
+        this.dropDotFn();
     }
 };
 
 mainGameState.growCircle = function () {
     if (myPlayerID >= 0) {
-        if (this.playerList[myPlayerID].width < 400) {
-            this.playerList[myPlayerID].width += 01;
-            this.playerList[myPlayerID].height += 01;
-            Client.updateSize(this.playerList[myPlayerID].width);
+        var player = this.playerList[myPlayerID];
+        if (player.width < 400) {
+            player.width += .5;
+            player.height += .5;
+            Client.updateSize(player.width);
         } else {
-            this.playerList[myPlayerID].width = 400;
-            this.playerList[myPlayerID].height = 400;
+            player.width = 400;
+            player.height = 400;
         }
     };
 };
 
 mainGameState.updateOtherSizes = function (id, size) {
     var player = this.playerList[id];
-    player.width = player.height = size;
+    if (player != null) {
+        player.width = player.height = size;
+    }
 };
 
 
-/*mainGameState.dropDotFn = function () {
-    if (
-        this.dotButton.dropDot.isDown &&
-        this.player.width > 40
-    ) {
-        this.player.width = this.player.width - 75;
-        this.player.height = this.player.height - 75;
-        this.timeCheck = game.time.now;
+mainGameState.dropDotFn = function () {
+    if (myPlayerID >= 0) {
+        var player = this.playerList[myPlayerID];
+        if (
+            this.dotButton.dropDot.isDown &&
+            player.width > 40
+        ) {
+            player.width = player.width - 75;
+            player.height = player.height - 75;
+            this.timeCheck = game.time.now;
+            Client.shrinkPlayer(player.width);
 
-        // Drop a dot and add it to the group
-        var newdot = game.add.sprite(this.player.x, this.player.y, 'player', 0, this.dotGroup);
-        newdot.width = newdot.height = DOT_SIZE;
-        newdot.anchor.setTo(0.5, 0.5);
-        newdot.tint = this.hexColor;
-    }
-};*/
+        };
+    };
+};
 
 //This function is intended to be able to move our circle.
 mainGameState.movePlayer = function () {
@@ -168,7 +170,6 @@ mainGameState.movePlayer = function () {
 mainGameState.updateOtherPlayer = function (id, x, y) {
     // Get the player with incoming id from the list
     var player = this.playerList[id];
-    console.log(player);
 
     // Update its local position
     if (player != null) {

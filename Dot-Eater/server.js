@@ -61,6 +61,11 @@ io.on('connection', function (socket) {
             socket.broadcast.emit('grow', socket.player);
         });
 
+        socket.on('shrink', function (data) {
+            socket.player.size = data;
+            socket.broadcast.emit('shrink', socket.player);
+        });
+
         socket.on('disconnect', function () {
             io.emit('remove', socket.player.id);
         });
