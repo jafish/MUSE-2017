@@ -8,6 +8,7 @@ const LEFT_ARROW = 3;
 const MOVEMENT = 7;
 const GROWTH_RATE = 1;
 const MAX_SIZE = 400;
+const MAX_SIZE_TO_DROP = 75;
 
 var myPlayerID = -1;
 
@@ -89,7 +90,7 @@ mainGameState.update = function () {
 
     if (1000 < game.time.now - this.timeCheck) {
         // allow dropDotFn to run
-        //this.dropDotFn();
+        this.dropDotFn();
     }
 };
 
@@ -107,22 +108,26 @@ mainGameState.growCircle = function () {
     }
 };
 
-//mainGameState.dropDotFn = function () {
-//    if (
-//        this.dotButton.dropDot.isDown &&
-//        this.player.width > 40
-//    ) {
-//        this.player.width = this.player.width - 75;
-//        this.player.height = this.player.height - 75;
-//        this.timeCheck = game.time.now;
-//
-//        // Drop a dot and add it to the group
-//        var newdot = game.add.sprite(this.player.x, this.player.y, 'player', 0, this.dotGroup);
-//        newdot.width = newdot.height = DOT_SIZE;
-//        newdot.anchor.setTo(0.5, 0.5);
-//        newdot.tint = this.hexColor;
-//    }
-//};
+mainGameState.dropDotFn = function () {
+    // Ensure that we have a valid player, then drop the dots!
+    if (myPlayerID >= 0) {
+        var player = this.playerList[myPlayerID];
+        if (
+            this.dotButton.dropDot.isDown &&
+            player.width > MAX_SIZE_TO_DROP
+        ) {
+            player.width = player.width - MAX_SIZE_TO_DROP;
+            player.height = player.height - MAX_SIZE_TO_DROP;
+            this.timeCheck = game.time.now;
+
+            // Drop a dot and add it to the group
+            var newdot = game.add.sprite(player.x, player.y, 'player', 0, this.dotGroup);
+            newdot.width = newdot.height = DOT_SIZE;
+            newdot.anchor.setTo(0.5, 0.5);
+            newdot.tint = player.tint;
+        }
+    }
+};
 
 //This function is intended to be able to move our circle.
 mainGameState.movePlayer = function () {
