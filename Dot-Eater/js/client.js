@@ -1,4 +1,4 @@
-// Client File 11:25 am 6/19/2017
+// Client File -- 12:41 pm 6/19/2017
 
 // For server, need to add + ":8081" to address until we figure
 // out WTF is going on with socket.io
@@ -19,12 +19,12 @@ Client.updatePosition = function (data) {
 };
 
 //Hear "shrink" from the game, send "sendSm" to the server
-Client.shrink = function (data) {
-    Client.socket.emit('sendSm', data);
+Client.shrink = function (playerSize) {
+    Client.socket.emit('sendSm', playerSize);
 };
 
-Client.grow = function (data) {
-    Client.socket.emit('sendBi', data);
+Client.grow = function (playerSize) {
+    Client.socket.emit('sendBi', playerSize);
 };
 
 //Hear "sendDot" from the game, send "addDot" to the server
@@ -39,13 +39,13 @@ Client.socket.on('addDot', function (data) {
 });
 
 //Hear "relaySm" from the server, tell game to update that player's height/width
-Client.socket.on('relaySm', function (data) {
-   mainGameState.updateSmall(data.height);
+Client.socket.on('relaySm', function (otherPlayer) {
+   mainGameState.updateOtherSizes(otherPlayer.size, otherPlayer.id);
 });
 
 //Hear "relayBi" from the server, tell game to update that player's height/width
-Client.socket.on('relayBi', function (data) {
-   mainGameState.updateBig(data.width, data.id);
+Client.socket.on('relayBi', function (otherPlayer) {
+   mainGameState.updateOtherSizes(otherPlayer.size, otherPlayer.id);
 });
 
 Client.socket.on('newplayer', function (data) {

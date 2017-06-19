@@ -1,4 +1,4 @@
-// Game File -- 11:25 am 6/19/2017
+// Game File -- 12:41 pm 6/19/2017
 
 const DOT_SIZE = 10;
 const UP_ARROW = 0;
@@ -39,7 +39,7 @@ mainGameState.create = function () {
     // Dots
     this.dotGroup = game.add.group();
     this.otherDotGroup = game.add.group();
-    
+
     this.dropSound = game.add.audio('drop');
 
     //Nice dusty lavender background, instead of black.
@@ -90,7 +90,9 @@ mainGameState.update = function () {
     if (1000 < game.time.now - this.timeCheck) {
         this.dropDotFn();
     }
- //   this.updateOtherDot();
+
+    this.updateOtherDot();
+    this.updateOtherSizes();
 };
 
 mainGameState.growCircle = function () {
@@ -103,7 +105,7 @@ mainGameState.growCircle = function () {
             this.playerList[myPlayerID].height = 250;
         }
         Client.grow({
-            width: this.playerList[myPlayerID].width,
+            size: this.playerList[myPlayerID].width,
         });
     }
 };
@@ -142,26 +144,18 @@ mainGameState.dropDotFn = function () {
             this.playerList[myPlayerID].height -= 30;
             //Send new size to the client
             Client.shrink({
-                height: this.playerList[myPlayerID].height
+                size: this.playerList[myPlayerID].height
             });
 
         } //closes: if myPlayerID
     } //closes: if the dotButton is pressed
 }; //closes dropDotFn
 
-mainGameState.updateSmall = function (height) {
+mainGameState.updateOtherSizes = function (size, id) {
     var player = id;
     // Update that player's size
     if (player != null) {
-        player.height = player.width = height;
-    }
-};
-
-mainGameState.updateBig = function (width, id) {
-    var player = id;
-    // Update that player's size
-    if (player != null) {
-        player.width = player.height = width;
+        player.width = player.height = size;
     }
 };
 
