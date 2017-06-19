@@ -161,23 +161,22 @@ mainGameState.shrinkDotFn = function () {
 
 
             //Spawn Dot
-            if (this.myDotObjects[mydotIDs] {
-                    this.myDotObjects[mydotIDs] = game.add.sprite(player.x, player.y, 'player');
-                    this.myDotObjects[mydotIDs].anchor.setTo(0.5, 0.5);
-                    this.myDotObjects[mydotIDs].width = this.myDotObjects[mydotIDs].height = 25;
-                    this.myDotObjects[mydotIDs].tint = playercolor;
-                    this.myDotObjects[mydotIDs].smoothed = false;
-                    game.physics.arcade.enable(this.myDotObjects[mydotIDs]);
-                    this.myDotObjects[mydotIDs].body.setCircle(40);
-                    this.myDotGroup.add(this.myDotObjects[mydotIDs]);
-                    console.log(this.myDotGroup.children[mydotIDs].x);
-                    Client.sentDotLocation({
-                        x: this.myDotGroup.children[mydotIDs].x,
-                        y: this.myDotGroup.children[mydotIDs].y,
-                        color: playercolor
-                    });
-                    mydotIDs++;
-                };
+            if (mydotIDs >= 0) {
+                this.myDotObjects[mydotIDs] = game.add.sprite(player.x, player.y, 'player');
+                this.myDotObjects[mydotIDs].anchor.setTo(0.5, 0.5);
+                this.myDotObjects[mydotIDs].width = this.myDotObjects[mydotIDs].height = 25;
+                this.myDotObjects[mydotIDs].tint = playercolor;
+                this.myDotObjects[mydotIDs].smoothed = false;
+                game.physics.arcade.enable(this.myDotObjects[mydotIDs]);
+                this.myDotObjects[mydotIDs].body.setCircle(40);
+                this.myDotGroup.add(this.myDotObjects[mydotIDs]);
+                Client.sentDotLocation({
+                    x: this.myDotGroup.children[mydotIDs].x,
+                    y: this.myDotGroup.children[mydotIDs].y,
+                    color: playercolor
+                });
+                console.log(mydotIDs);
+                mydotIDs++;
             };
         };
     };
@@ -201,7 +200,6 @@ mainGameState.eatDot = function (player, dot) {
         y: dot.y,
         color: dot.tint
     });
-    console.log(dot.x, dot.y, dot.tint);
     dot.destroy();
     score++;
 };
@@ -223,13 +221,14 @@ mainGameState.removeDot = function (x, y, color) {
     //Check YOUR dot group
     var n = 1;
     for (i = this.myDotGroup.children.length - 1; i >= 0; i--) {
-        if (this.myDotGroup.children[i]) {
-            if (this.myDotGroup.children[i].x == x && this.myDotGroup.children[i].y == y && this.myDotGroup.children[i].tint == color) {
-                this.myDotGroup.children[i].destroy();
+        if (this.myDotGroup.children[i].x == x && this.myDotGroup.children[i].y == y && this.myDotGroup.children[i].tint == color) {
+            if (this.myDotGroup.children[i]) {
                 this.myDotGroup.children.splice(this.myDotGroup.children.length - n, 1);
+                this.myDotGroup.children[i].destroy();
             } else {
                 n++;
             };
+            console.log(mydotIDs);
         };
     };
 };
