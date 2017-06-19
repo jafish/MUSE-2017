@@ -1,5 +1,3 @@
-// Client File
-
 // Game File
 
 const DOT_SIZE = 10;
@@ -183,5 +181,3 @@ mainGameState.render = function () {
 
 game.state.add("Game", mainGameState);
 game.state.start("Game");
-
-// Server File
