@@ -75,24 +75,47 @@ io.on('connection', function (socket) {
                 color: data.color
             }
             httpServer.dotArray.push(dot);
+            //console.log(httpServer.dotArray);
             socket.broadcast.emit('spawnDot', data)
         });
+
+        socket.on('eatDot', function (data) {
+            var n = 1;
+            for (var i = httpServer.dotArray.length - 1; i >= 0; i--) {
+                if (httpServer.dotArray[i]) {
+                    if (httpServer.dotArray[i].x == data.x && httpServer.dotArray[i].y == data.y && httpServer.dotArray[i].color == data.color) {
+                        httpServer.dotArray.splice(httpServer.dotArray.length - n, 1);
+                    } else {
+                        n++;
+                    };
+                };
+            }
+            socket.broadcast.emit('removeDot', data);
+        });
+
+
 
         //server will compare the x y and color with each member of the dotArray. When the dot is found it removes it from the array, sends the data back to client. 
 
         socket.on('disconnect', function () {
-            io.emit('remove', socket.player.id);
-            for (var i = 0; i < httpServer.dotArray.length; i++) {
-                if (httpServer.dotArray.length[i]) {
-                    if (httpServer.dotArray[i].color == socket.player.color) {
-                        httpServer.dotArray.splice(httpServer.dotArray[i], 1);
+            var n = 1;
+            for (var i = httpServer.dotArray.length - 1; i >= 0; i--) {
+                if (httpServer.dotArray[i]) {
+                    if (socket.player) {
+                        if (httpServer.dotArray[i].color == socket.player.color) {
+                            httpServer.dotArray.splice(httpServer.dotArray.length - n, 1);
+                        } else if (httpServer.dotArray[i].color != socket.player.color) {
+                            n++;
+                        };
                     };
                 };
             };
+            io.emit('remove', socket.player.id);
             io.emit('removeDots', socket.player.color);
         });
     });
 });
+
 
 function getAllPlayers() {
     var collectedPlayers = [];

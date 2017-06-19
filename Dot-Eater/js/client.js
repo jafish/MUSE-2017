@@ -26,6 +26,10 @@ Client.sentDotLocation = function (data) {
     Client.socket.emit('spawnDot', data);
 }
 
+Client.eatDot = function (data) {
+    Client.socket.emit('eatDot', data);
+}
+
 //The client will receive the data, send the data to the server
 
 Client.socket.on('newplayer', function (data) {
@@ -64,6 +68,10 @@ Client.socket.on('shrink', function (data) {
 Client.socket.on('spawnDot', function (data) {
     mainGameState.spawnOtherDots(data.x, data.y, data.color);
 
+});
+
+Client.socket.on('removeDot', function (data) {
+    mainGameState.removeDot(data.x, data.y, data.color);
 });
 
 //On receiving removed dot data from server the client will send the data back to the game 
