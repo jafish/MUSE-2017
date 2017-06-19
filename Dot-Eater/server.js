@@ -1,3 +1,4 @@
+// Server File 6/19/2017 11:26 am
 const UP_ARROW = 0;
 const RIGHT_ARROW = 1;
 const DOWN_ARROW = 2;
@@ -60,18 +61,20 @@ io.on('connection', function (socket) {
         socket.on('addDot', function (data) {
             socket.broadcast.emit('addDot', data);
         });
-        
-        //Hear sendSize from the client, send relaySize to all other clients
-        socket.on('sendSm', function (data) {
-            socket.player.height = data.height;
-            socket.broadcast.emit('relaySm', socket.player);
-        });
-        
-        socket.on('sendBi', function (data) {
-            socket.player.width = data.width
-            socket.broadcast.emit('relayBi', socket.player);
-        });
 
+        //****VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
+        //Hear sendSize from the client, send relaySize to all other clients
+        {
+            socket.on('sendSm', function (data) {
+                socket.player.height = data.height;
+                socket.broadcast.emit('relaySm', socket.player);
+            });
+
+            socket.on('sendBi', function (data) {
+                socket.player.width = data.width
+                socket.broadcast.emit('relayBi', socket.player);
+            });
+        } // ***** ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
         socket.on('disconnect', function () {
             io.emit('remove', socket.player.id);
             console.log("Player disconnected.");

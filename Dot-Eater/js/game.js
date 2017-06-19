@@ -1,4 +1,4 @@
-// Game File -- 11:08 am 6/19/2017
+// Game File -- 11:25 am 6/19/2017
 
 const DOT_SIZE = 10;
 const UP_ARROW = 0;
@@ -90,7 +90,7 @@ mainGameState.update = function () {
     if (1000 < game.time.now - this.timeCheck) {
         this.dropDotFn();
     }
-    this.updateOtherDot();
+ //   this.updateOtherDot();
 };
 
 mainGameState.growCircle = function () {
@@ -157,7 +157,7 @@ mainGameState.updateSmall = function (height) {
     }
 };
 
-mainGameState.updateBig = function (width) {
+mainGameState.updateBig = function (width, id) {
     var player = id;
     // Update that player's size
     if (player != null) {

@@ -1,3 +1,5 @@
+// Client File 11:25 am 6/19/2017
+
 // For server, need to add + ":8081" to address until we figure
 // out WTF is going on with socket.io
 // *** EDIT: Robin's version is running on port 8137.***
@@ -43,7 +45,7 @@ Client.socket.on('relaySm', function (data) {
 
 //Hear "relayBi" from the server, tell game to update that player's height/width
 Client.socket.on('relayBi', function (data) {
-   mainGameState.updateBig(data.width);
+   mainGameState.updateBig(data.width, data.id);
 });
 
 Client.socket.on('newplayer', function (data) {
