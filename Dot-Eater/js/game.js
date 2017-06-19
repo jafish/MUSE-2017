@@ -1,4 +1,4 @@
-// Game File -- 12:41 pm 6/19/2017
+// Game File -- 3:20 pm 6/19/2017
 
 const DOT_SIZE = 10;
 const UP_ARROW = 0;
@@ -31,20 +31,22 @@ mainGameState.create = function () {
     game.stage.disableVisibilityChange = true;
     this.timeCheck = 0;
 
-    this.playerList = {};
-
     //Start the physics
     game.physics.startSystem(Phaser.Physics.ARCADE);
+    
+    //Nice dusty lavender background, instead of black.
+    game.stage.backgroundColor = "#6d5f77";
 
     // Dots
     this.dotGroup = game.add.group();
     this.otherDotGroup = game.add.group();
 
     this.dropSound = game.add.audio('drop');
+    
+    // Players
+    this.playerList = {};
 
-    //Nice dusty lavender background, instead of black.
-    game.stage.backgroundColor = "#6d5f77";
-
+    // KEY INPUTS
     // Arrow keys and spacebar only affect game.
     game.input.keyboard.addKeyCapture(
       [Phaser.Keyboard.UP, Phaser.Keyboard.DOWN,
@@ -110,7 +112,6 @@ mainGameState.growCircle = function () {
 };
 
 mainGameState.dropDotFn = function () {
-
     if (this.dotButton.dropDot.isDown && this.playerList[myPlayerID].width > 60) {
         if (myPlayerID >= 0) {
             // Perform a timeCheck for the delay.
@@ -129,35 +130,23 @@ mainGameState.dropDotFn = function () {
             this.dropSound.play();
             dropped = true;
 
-            // modeled after the move function
+            // Send an object containing the player color and x/y positions.
             if (dropped) {
                 Client.sendDot({
                     id: playerColor,
                     x: newdot.x,
                     y: newdot.y
                 });
-            } //closes: if dropped = true
+            }
 
-            //Change player size
+            //Change and send player size
             this.playerList[myPlayerID].width -= 30;
             this.playerList[myPlayerID].height -= 30;
-            //Send new size to the client
             Client.shrink(this.playerList[myPlayerID].height);
 
         } //closes: if myPlayerID
     } //closes: if the dotButton is pressed
 }; //closes dropDotFn
-
-mainGameState.updateOtherSizes = function (size, id) {
-    console.log("updateOtherSizes is running");
-    var player = id;
-    // Update that player's size
-    if (player != null) {
-        console.log("The player in question exists");
-        player.width = player.height = size;
-        console.log("The new size of the player is " + size);
-    }
-};
 
 // Other's dots are coming in from the Client
 mainGameState.updateOtherDot = function (id, x, y) {
@@ -213,6 +202,17 @@ mainGameState.updateOtherPlayer = function (id, x, y) {
     if (player != null) {
         player.x = x;
         player.y = y;
+    }
+};
+
+mainGameState.updateOtherSizes = function (size, id) {
+    console.log("updateOtherSizes is running");
+    // Update that player's size
+    if (id >= 0) {
+        console.log("The player in question exists");
+        this.playerList[id].width = size;
+        this.playerList[id].height = size;
+        console.log("The new size of the player is " + size);
     }
 };
 

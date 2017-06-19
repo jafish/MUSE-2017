@@ -1,4 +1,4 @@
-// Client File -- 12:41 pm 6/19/2017
+// Client File -- 3:20 pm 6/19/2017
 
 // For server, need to add + ":8081" to address until we figure
 // out WTF is going on with socket.io
@@ -11,43 +11,37 @@ Client.socket = io.connect(address);
 //************FROM GAME******************
 Client.askNewPlayer = function () {
     Client.socket.emit('newplayer');
-    //console.log("Sending new player");
 };
 
 Client.updatePosition = function (data) {
     Client.socket.emit('move', data);
 };
 
-//Hear "shrink" from the game, send "sendSm" to the server
 Client.shrink = function (playerSize) {
     Client.socket.emit('sendSm', playerSize);
 };
 
 Client.grow = function (playerSize) {
-    console.log("The client has received " + playerSize);
+    console.log("The client has received " + playerSize + " from the game.");
     Client.socket.emit('sendBi', playerSize);
-    console.log("The client is sending " + playerSize);
+    console.log("The client is sending " + playerSize + " to the server.");
 };
 
-//Hear "sendDot" from the game, send "addDot" to the server
 Client.sendDot = function (data) {
     Client.socket.emit('addDot', data);
 };
 
 //*****************FROM SERVER****************************
-//Hear "addDot" from the server, tell game to "updateOtherDot"
 Client.socket.on('addDot', function (data) {
    mainGameState.updateOtherDot(data.id, data.x, data.y); 
 });
 
-//Hear "relaySm" from the server, tell game to update that player's height/width
 Client.socket.on('relaySm', function (otherPlayer) {
    mainGameState.updateOtherSizes(otherPlayer.size, otherPlayer.id);
 });
 
-//Hear "relayBi" from the server, tell game to update that player's height/width
 Client.socket.on('relayBi', function (otherPlayer) {
-    console.log("The client has received data about the other player.")
+    console.log("The client has received data from the server about another player.")
     mainGameState.updateOtherSizes(otherPlayer.size, otherPlayer.id);
     console.log("The client is telling the game about " + otherPlayer.size + " and " + otherPlayer.id);
 });

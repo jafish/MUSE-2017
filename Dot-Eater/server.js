@@ -1,4 +1,4 @@
-// Server File -- 12:41 pm 6/19/2017
+// Server File -- 3:20 pm 6/19/2017
 const UP_ARROW = 0;
 const RIGHT_ARROW = 1;
 const DOWN_ARROW = 2;
@@ -57,14 +57,11 @@ io.on('connection', function (socket) {
             socket.broadcast.emit('move', socket.player);
         });
 
-        //Hear addDot from the client, send addDot to all other clients
         socket.on('addDot', function (data) {
             socket.broadcast.emit('addDot', data);
         });
 
-        //****VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
-        //Hear sendSize from the client, send relaySize to all other clients
-        
+        // ***** vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv        
             socket.on('sendSm', function (playerHeight) {
                 socket.player.height = playerHeight.size;
                 socket.broadcast.emit('relaySm', socket.player);
