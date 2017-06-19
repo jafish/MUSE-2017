@@ -63,12 +63,12 @@ io.on('connection', function (socket) {
         
         //Hear sendSize from the client, send relaySize to all other clients
         socket.on('sendSm', function (data) {
-            socket.player.size = data;
+            socket.player.height = data.height;
             socket.broadcast.emit('relaySm', socket.player);
         });
         
         socket.on('sendBi', function (data) {
-            socket.player.size = data;
+            socket.player.width = data.width
             socket.broadcast.emit('relayBi', socket.player);
         });
 
