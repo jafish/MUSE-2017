@@ -94,41 +94,6 @@ mainGameState.update = function () {
     }
 };
 
-mainGameState.growCircle = function () {
-    // Ensure that we have a valid player, then grow if below max size
-    if (myPlayerID >= 0) {
-        var player = this.playerList[myPlayerID];
-        if (player.width < MAX_SIZE) {
-            player.width += GROWTH_RATE;
-            player.height += GROWTH_RATE;
-        } else {
-            player.width = MAX_SIZE;
-            player.height = MAX_SIZE;
-        }
-    }
-};
-
-mainGameState.dropDotFn = function () {
-    // Ensure that we have a valid player, then drop the dots!
-    if (myPlayerID >= 0) {
-        var player = this.playerList[myPlayerID];
-        if (
-            this.dotButton.dropDot.isDown &&
-            player.width > MAX_SIZE_TO_DROP
-        ) {
-            player.width = player.width - MAX_SIZE_TO_DROP;
-            player.height = player.height - MAX_SIZE_TO_DROP;
-            this.timeCheck = game.time.now;
-
-            // Drop a dot and add it to the group
-            var newdot = game.add.sprite(player.x, player.y, 'player', 0, this.dotGroup);
-            newdot.width = newdot.height = DOT_SIZE;
-            newdot.anchor.setTo(0.5, 0.5);
-            newdot.tint = player.tint;
-        }
-    }
-};
-
 //This function is intended to be able to move our circle.
 mainGameState.movePlayer = function () {
 
@@ -162,18 +127,65 @@ mainGameState.movePlayer = function () {
         }
     }
     // TODO: Fix diagonal too-fast-ness
-
 };
 
-mainGameState.updateOtherPlayer = function (id, x, y) {
+mainGameState.growCircle = function () {
+    // Ensure that we have a valid player, then grow if below max size
+    if (myPlayerID >= 0) {
+        var player = this.playerList[myPlayerID];
+        if (player.width < MAX_SIZE) {
+            player.width += GROWTH_RATE;
+            player.height += GROWTH_RATE;
+            // Request that the Client send a message to the server
+            // indicating my new size
+            Client.updateSize(player.width);
+        } else {
+            player.width = MAX_SIZE;
+            player.height = MAX_SIZE;
+        }
+    }
+};
+
+mainGameState.dropDotFn = function () {
+    // Ensure that we have a valid player, then drop the dots!
+    if (myPlayerID >= 0) {
+        var player = this.playerList[myPlayerID];
+        if (
+            this.dotButton.dropDot.isDown &&
+            player.width > MAX_SIZE_TO_DROP
+        ) {
+            player.width = player.width - MAX_SIZE_TO_DROP;
+            player.height = player.height - MAX_SIZE_TO_DROP;
+            this.timeCheck = game.time.now;
+
+            // Drop a dot and add it to the group
+            var newdot = game.add.sprite(player.x, player.y, 'player', 0, this.dotGroup);
+            newdot.width = newdot.height = DOT_SIZE;
+            newdot.anchor.setTo(0.5, 0.5);
+            newdot.tint = player.tint;
+        }
+    }
+};
+
+mainGameState.updateOtherPlayerPosition = function (id, x, y) {
     // Get the player with incoming id from the list
     var player = this.playerList[id];
-    console.log(player);
 
     // Update its local position
     if (player != null) {
         player.x = x;
         player.y = y;
+    }
+}
+
+mainGameState.updateOtherPlayerSize = function (id, size) {
+    // Get the player with incoming id from the list
+    var player = this.playerList[id];
+    console.log("Received player is " + player);
+
+    // Update its size
+    if (player != null) {
+        player.width = player.height = size;
     }
 }
 

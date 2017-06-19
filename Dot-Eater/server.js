@@ -44,6 +44,7 @@ io.on('connection', function (socket) {
             x: randomInt(100, 400),
             y: randomInt(100, 400)
         };
+
         socket.emit('allplayers', getAllPlayers());
         socket.emit('you', socket.player.id);
         //console.log(getAllPlayers());
@@ -51,9 +52,17 @@ io.on('connection', function (socket) {
 
         socket.on('move', function (data) {
             // Update this player's recorded position in server's socket object
+            // Then, send a message to all clients to update their copies of this player
             socket.player.x = data.x;
             socket.player.y = data.y;
             socket.broadcast.emit('move', socket.player);
+        });
+
+        socket.on('resize', function (data) {
+            // Update this player's recorded size in server's socket object
+            // Then, send a message to all clients to update their copies of this player
+            socket.player.size = data;
+            socket.broadcast.emit('resize', socket.player);
         });
 
         socket.on('disconnect', function () {
