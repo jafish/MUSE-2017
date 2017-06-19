@@ -24,7 +24,9 @@ Client.shrink = function (playerSize) {
 };
 
 Client.grow = function (playerSize) {
+    console.log("The client has received " + playerSize);
     Client.socket.emit('sendBi', playerSize);
+    console.log("The client is sending " + playerSize);
 };
 
 //Hear "sendDot" from the game, send "addDot" to the server
@@ -45,7 +47,9 @@ Client.socket.on('relaySm', function (otherPlayer) {
 
 //Hear "relayBi" from the server, tell game to update that player's height/width
 Client.socket.on('relayBi', function (otherPlayer) {
-   mainGameState.updateOtherSizes(otherPlayer.size, otherPlayer.id);
+    console.log("The client has received data about the other player.")
+    mainGameState.updateOtherSizes(otherPlayer.size, otherPlayer.id);
+    console.log("The client is telling the game about " + otherPlayer.size + " and " + otherPlayer.id);
 });
 
 Client.socket.on('newplayer', function (data) {

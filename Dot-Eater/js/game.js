@@ -100,13 +100,12 @@ mainGameState.growCircle = function () {
         if (this.playerList[myPlayerID].width < 250) {
             this.playerList[myPlayerID].width += 0.35;
             this.playerList[myPlayerID].height += 0.35;
+            console.log("Game is sending " + this.playerList[myPlayerID].width); // What is the player width?
+            Client.grow(this.playerList[myPlayerID].width);
         } else {
             this.playerList[myPlayerID].width = 250;
             this.playerList[myPlayerID].height = 250;
         }
-        Client.grow({
-            size: this.playerList[myPlayerID].width,
-        });
     }
 };
 
@@ -143,19 +142,20 @@ mainGameState.dropDotFn = function () {
             this.playerList[myPlayerID].width -= 30;
             this.playerList[myPlayerID].height -= 30;
             //Send new size to the client
-            Client.shrink({
-                size: this.playerList[myPlayerID].height
-            });
+            Client.shrink(this.playerList[myPlayerID].height);
 
         } //closes: if myPlayerID
     } //closes: if the dotButton is pressed
 }; //closes dropDotFn
 
 mainGameState.updateOtherSizes = function (size, id) {
+    console.log("updateOtherSizes is running");
     var player = id;
     // Update that player's size
     if (player != null) {
+        console.log("The player in question exists");
         player.width = player.height = size;
+        console.log("The new size of the player is " + size);
     }
 };
 

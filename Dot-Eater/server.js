@@ -64,17 +64,20 @@ io.on('connection', function (socket) {
 
         //****VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
         //Hear sendSize from the client, send relaySize to all other clients
-        {
+        
             socket.on('sendSm', function (playerHeight) {
                 socket.player.height = playerHeight.size;
                 socket.broadcast.emit('relaySm', socket.player);
             });
 
             socket.on('sendBi', function (playerWidth) {
+                console.log("The server has received " + playerWidth);
                 socket.player.width = playerWidth;
+                console.log("The server has determined the playerWidth of the sending player");
                 socket.broadcast.emit('relayBi', socket.player);
+                console.log("The server has relayed the socket.player object");
             });
-        } // ***** ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        // ***** ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
         socket.on('disconnect', function () {
             io.emit('remove', socket.player.id);
             console.log("Player disconnected.");
