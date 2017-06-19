@@ -6,6 +6,8 @@ const RIGHT_ARROW = 1;
 const DOWN_ARROW = 2;
 const LEFT_ARROW = 3;
 const MOVEMENT = 7;
+const GROWTH_RATE = 1;
+const MAX_SIZE = 400;
 
 var myPlayerID = -1;
 
@@ -83,7 +85,7 @@ mainGameState.addNewPlayer = function (id, color, size, x, y) {
 
 mainGameState.update = function () {
     this.movePlayer();
-    //this.growCircle();
+    this.growCircle();
 
     if (1000 < game.time.now - this.timeCheck) {
         // allow dropDotFn to run
@@ -92,12 +94,16 @@ mainGameState.update = function () {
 };
 
 mainGameState.growCircle = function () {
-    if (this.player.width < 400) {
-        this.player.width += 01;
-        this.player.height += 01;
-    } else {
-        this.player.width = 400;
-        this.player.height = 400;
+    // Ensure that we have a valid player, then grow if below max size
+    if (myPlayerID >= 0) {
+        var player = this.playerList[myPlayerID];
+        if (player.width < MAX_SIZE) {
+            player.width += GROWTH_RATE;
+            player.height += GROWTH_RATE;
+        } else {
+            player.width = MAX_SIZE;
+            player.height = MAX_SIZE;
+        }
     }
 };
 
