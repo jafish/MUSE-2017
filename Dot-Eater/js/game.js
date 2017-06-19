@@ -33,7 +33,7 @@ mainGameState.create = function () {
 
     //Start the physics
     game.physics.startSystem(Phaser.Physics.ARCADE);
-    
+
     //Nice dusty lavender background, instead of black.
     game.stage.backgroundColor = "#6d5f77";
 
@@ -42,7 +42,7 @@ mainGameState.create = function () {
     this.otherDotGroup = game.add.group();
 
     this.dropSound = game.add.audio('drop');
-    
+
     // Players
     this.playerList = {};
 
@@ -102,7 +102,6 @@ mainGameState.growCircle = function () {
         if (this.playerList[myPlayerID].width < 250) {
             this.playerList[myPlayerID].width += 0.35;
             this.playerList[myPlayerID].height += 0.35;
-            console.log("Game is sending " + this.playerList[myPlayerID].width); // What is the player width?
             Client.grow(this.playerList[myPlayerID].width);
         } else {
             this.playerList[myPlayerID].width = 250;
@@ -120,7 +119,6 @@ mainGameState.dropDotFn = function () {
 
             //Get YOUR ID and use it to represent your color.
             var playerColor = this.playerList[myPlayerID].tint;
-            //console.log(playerColor);
 
             // Drop a dot and add it to the group
             var newdot = game.add.sprite(this.playerList[myPlayerID].x, this.playerList[myPlayerID].y, 'player', 0, this.dotGroup);
@@ -190,13 +188,11 @@ mainGameState.movePlayer = function () {
         }
     }
     // TODO: Fix diagonal too-fast-ness
-
 };
 
 mainGameState.updateOtherPlayer = function (id, x, y) {
     // Get the player with incoming id from the list
     var player = this.playerList[id];
-    //console.log(player);
 
     // Update its local position
     if (player != null) {
@@ -206,13 +202,10 @@ mainGameState.updateOtherPlayer = function (id, x, y) {
 };
 
 mainGameState.updateOtherSizes = function (size, id) {
-    console.log("updateOtherSizes is running");
     // Update that player's size
     if (id >= 0) {
-        console.log("The player in question exists");
         this.playerList[id].width = size;
         this.playerList[id].height = size;
-        console.log("The new size of the player is " + size);
     }
 };
 

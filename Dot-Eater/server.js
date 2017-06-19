@@ -47,7 +47,6 @@ io.on('connection', function (socket) {
         };
         socket.emit('allplayers', getAllPlayers());
         socket.emit('you', socket.player.id);
-        //console.log(getAllPlayers());
         socket.broadcast.emit('newplayer', socket.player);
 
         socket.on('move', function (data) {
@@ -62,18 +61,15 @@ io.on('connection', function (socket) {
         });
 
         // ***** vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv        
-            socket.on('sendSm', function (playerHeight) {
-                socket.player.height = playerHeight.size;
-                socket.broadcast.emit('relaySm', socket.player);
-            });
+        socket.on('sendSm', function (playerHeight) {
+            socket.player.height = playerHeight.size;
+            socket.broadcast.emit('relaySm', socket.player);
+        });
 
-            socket.on('sendBi', function (playerWidth) {
-                console.log("The server has received " + playerWidth);
-                socket.player.width = playerWidth;
-                console.log("The server has determined the playerWidth of the sending player");
-                socket.broadcast.emit('relayBi', socket.player);
-                console.log("The server has relayed the socket.player object");
-            });
+        socket.on('sendBi', function (playerWidth) {
+            socket.player.size = playerWidth;
+            socket.broadcast.emit('relayBi', socket.player);
+        });
         // ***** ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
         socket.on('disconnect', function () {
             io.emit('remove', socket.player.id);
