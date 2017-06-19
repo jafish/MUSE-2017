@@ -23,6 +23,7 @@ var mainGameState = {};
 
 mainGameState.preload = function () {
     game.load.image('player', 'assets/sprites/circle.png');
+    game.load.audio('drop', ['assets/dropAudio.mp3', 'assets/dropAudio.ogg']);
 };
 
 mainGameState.create = function () {
@@ -38,6 +39,8 @@ mainGameState.create = function () {
     // Dots
     this.dotGroup = game.add.group();
     this.otherDotGroup = game.add.group();
+    
+    this.dropSound = game.add.audio('drop');
 
     //Nice dusty lavender background, instead of black.
     game.stage.backgroundColor = "#6d5f77";
@@ -122,6 +125,7 @@ mainGameState.dropDotFn = function () {
             newdot.width = newdot.height = DOT_SIZE;
             newdot.anchor.setTo(0.5, 0.5);
             newdot.tint = playerColor;
+            this.dropSound.play();
             dropped = true;
 
             // modeled after the move function

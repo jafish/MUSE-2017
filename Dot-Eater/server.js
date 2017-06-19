@@ -74,6 +74,8 @@ io.on('connection', function (socket) {
 
         socket.on('disconnect', function () {
             io.emit('remove', socket.player.id);
+            console.log("Player disconnected.");
+
         });
     });
 });
