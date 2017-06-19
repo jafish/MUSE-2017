@@ -1,4 +1,4 @@
-// Game File -- 2:53 pm 6/16/2017
+// Game File -- 11:08 am 6/19/2017
 
 const DOT_SIZE = 10;
 const UP_ARROW = 0;
@@ -238,5 +238,3 @@ mainGameState.render = function () {
 
 game.state.add("Game", mainGameState);
 game.state.start("Game");
-
-// Server File
