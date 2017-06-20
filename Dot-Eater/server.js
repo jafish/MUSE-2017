@@ -82,7 +82,19 @@ io.on('connection', function (socket) {
         socket.on('disconnect', function () {
             io.emit('remove', socket.player.id);
             console.log("Player disconnected.");
+            
+            // Upon disconnect, check disconnecting player's tint.
+            var disconnectedColor = theirColor(socket.player.id); //is .id needed?***
+            var n = 1;
 
+            // Find all dots of that tint and delete them from allServerDots array.
+            for (i = allServerDots.length - n; i >= 0; i--) { // Go through the whole allServerDots array, where i is the index number.
+                if (allServerDots[i].tint == disconnectedColor) { // If the tint of the tint of allServerDots at this index number is the same as the disconnected color, ...
+                    allServerDots.splice(length - n, 1); // ...splice just that index.
+                } else { // otherwise, increase n and check the next part of the index.
+                    n++;
+                }
+            }
         });
     });
 });
@@ -96,8 +108,14 @@ function getAllPlayers() {
         }
     });
     return collectedPlayers;
-}
+};
 
 function randomInt(low, high) {
     return Math.floor(Math.random() * (high - low) + low);
+};
+
+function theirColor(id) { //A function that takes a player object as an argument (called id) and returns that object's tint.
+    var player = socket.player;
+    return player.tint;
+    
 }
