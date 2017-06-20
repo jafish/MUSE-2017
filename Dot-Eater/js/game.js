@@ -1,4 +1,4 @@
-// Game File -- 12:22 pm 6/20/2017
+// Game File -- 3:45 pm 6/20/2017
 
 const DOT_SIZE = 10;
 const UP_ARROW = 0;
@@ -88,6 +88,24 @@ mainGameState.addNewPlayer = function (id, color, size, x, y) {
     // --- End Player Initialization ---
 };
 
+mainGameState.addNewDot = function (id, x, y) {
+    var newDot = game.add.sprite(x, y, 'player', 0, this.allDotGroup); // all (existing) dots belong to the allDotGroup
+    newDot.width = newDot.height = DOT_SIZE;
+    newDot.anchor.setTo(0.5, 0.5);
+    newDot.tint = id;
+    //this.dropSound.play(); // play a sound when a dot is dropped
+
+    this.allDots[this.allDots.length] = newDot; // add the newDot to the end of an array called allDots
+};
+
+mainGameState.updateAllDots = function (id, x, y) {
+    // all the normal dot dropping stuff, with the exception of making the tint based on the id, and the x and y coordinates are sent from the dot-dropper. 
+    var newDot = game.add.sprite(x, y, 'player', 0, this.allDotGroup); // define this newDot as belonging to the allDotGroup
+    newDot.width = newDot.height = DOT_SIZE; // size is based on the constant at the top of game.js
+    newDot.anchor.setTo(0.5, 0.5); // set anchor to the center of the dot
+    newDot.tint = id; // tint is based on player id that sent the dot
+}; 
+
 mainGameState.update = function () {
     this.movePlayer();
     this.growCircle();
@@ -96,6 +114,7 @@ mainGameState.update = function () {
         this.dropDotFn();
     }
 
+    this.addNewDot();
     this.updateAllDots();
     this.updateOtherSizes();
 };
@@ -123,8 +142,8 @@ mainGameState.dropDotFn = function () {
             this.timeCheck = game.time.now;
             var dropped = false; // set initial value of dropped to false
             //var playerColor = myPlayerID; // let the id in Client.askDot inform the player color (id)
-            var playerColor = this.playerList[myPlayerID].tint; 
-            
+            var playerColor = this.playerList[myPlayerID].tint;
+
             //Change and send player size
             this.playerList[myPlayerID].width -= 30;
             this.playerList[myPlayerID].height -= 30;
@@ -150,23 +169,6 @@ mainGameState.dropDotFn = function () {
         } //closes: if myPlayerID
     } //closes: if the dotButton is pressed
 }; //closes dropDotFn
-
-// Other's dots are coming in from the Client
-mainGameState.updateAllDots = function (id, x, y) {
-    // all the normal dot dropping stuff, with the exception of making the tint based on the id, and the x and y coordinates are sent from the dot-dropper. 
-    var newDot = game.add.sprite(x, y, 'player', 0, this.allDotGroup); // define this newDot as belonging to the allDotGroup
-    newDot.width = newDot.height = DOT_SIZE; // size is based on the constant at the top of game.js
-    newDot.anchor.setTo(0.5, 0.5); // set anchor to the center of the dot
-    newDot.tint = id; // tint is based on player id that sent the dot
-    //this.dropSound.play(); // play a sound when a dot is dropped
-
-    this.newDotObject = {
-        id,
-        x,
-        y
-    }; // create a new object called newDotObject
-    this.allDots[this.allDots.length] = this.newDotObject; // add this newDotObject to the end of an array called allDots
-};
 
 //This function moves our circle player
 mainGameState.movePlayer = function () {

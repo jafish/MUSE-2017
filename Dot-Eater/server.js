@@ -1,4 +1,4 @@
-// Server File -- 12:22 pm 6/20/2017
+// Server File -- 3:45 pm 6/20/2017
 const UP_ARROW = 0;
 const RIGHT_ARROW = 1;
 const DOWN_ARROW = 2;
@@ -8,11 +8,9 @@ const MOVEMENT = 7;
 var express = require('express');
 var app = express();
 var httpServer = require('http').Server(app);
-//var io = require('socket.io')(httpServer);
 var io = require('socket.io').listen(httpServer);
-//console.log(io);
 
-//io.set('log level', 1);
+var allServerDots = []; // create server-side array called allServerDots. This needs to be at the current level in order to be used by askDot. I am moving this above existingDots to see if it can access the array as well.
 
 app.use('/css', express.static(__dirname + '/css'));
 app.use('/js', express.static(__dirname + '/js'));
@@ -45,9 +43,13 @@ io.on('connection', function (socket) {
             x: randomInt(100, 400),
             y: randomInt(100, 400)
         };
-        socket.emit('allplayers', getAllPlayers());
-        socket.emit('you', socket.player.id);
-        socket.broadcast.emit('newplayer', socket.player);
+        socket.emit('allplayers', getAllPlayers()); // all online users are collected into an array by getAllPlayers function and are shown to the newest player
+
+        socket.emit('existingDots', allServerDots); // Based on allplayers, I assume that arrays can be relayed to the Client. 
+        console.log(allServerDots); // ERR: UNDEFINED
+
+        socket.emit('you', socket.player.id); // assign your id to yourself
+        socket.broadcast.emit('newplayer', socket.player); // existing players will receive {id, color, size, x, y} of new player
 
         socket.on('move', function (data) {
             // Update this player's recorded position in server's socket object
@@ -56,18 +58,17 @@ io.on('connection', function (socket) {
             socket.broadcast.emit('move', socket.player);
         });
 
-        this.allServerDots = []; // create server-side array called all Server Dots   
-
         socket.on('askDot', function (data) {
-            io.emit('addDot', data); // tell clients to add Dots. 
-            //console.log("Sending a dot to all players with the data" + data);
-            var serverDot = {
-                data
-            }; // turn the data into an object to be used by the server
-            this.allServerDots[this.allServerDots.length] = serverDot; // add this object to the allServerDots array
+            //This needs to be revised so that the server adds the dot to its array, and then sends the array (not the new dot). 
+
+            var serverDot = data;
+            allServerDots[allServerDots.length] = serverDot;
+
+            //console.log(allServerDots[0]); // --> {id, x, y} 
+            io.emit('addDot', serverDot); // tell clients to add the dot. 
+            console.log(allServerDots); // --> [ { serverDot1}, {serverDot2} ] 
         });
 
-        // ***** vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv        
         socket.on('sendSm', function (playerHeight) {
             socket.player.height = playerHeight.size;
             socket.broadcast.emit('relaySm', socket.player);
@@ -77,7 +78,7 @@ io.on('connection', function (socket) {
             socket.player.size = playerWidth;
             socket.broadcast.emit('relayBi', socket.player);
         });
-        // ***** ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
         socket.on('disconnect', function () {
             io.emit('remove', socket.player.id);
             console.log("Player disconnected.");
