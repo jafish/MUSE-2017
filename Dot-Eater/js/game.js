@@ -143,9 +143,11 @@ mainGameState.growCircle = function () {
 };
 
 mainGameState.updateOtherSizes = function (id, size) {
-    var player = this.playerList[id];
-    if (player != null) {
-        player.width = player.height = size;
+    if (this.playerList[id]) {
+        var player = this.playerList[id];
+        if (player != null) {
+            player.width = player.height = size;
+        }
     }
 };
 
