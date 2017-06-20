@@ -1,7 +1,7 @@
-// Client File -- 3:20 pm 6/19/2017
+// Client File -- 12:22 pm 6/20/2017
 
 // For server, need to add + ":8081" to address until we figure
-// out WTF is going on with socket.io
+// out what is going on with socket.io
 // *** EDIT: Robin's version is running on port 8137.***
 var address = window.location.origin + ":8137";
 
@@ -25,13 +25,14 @@ Client.grow = function (playerSize) {
     Client.socket.emit('sendBi', playerSize);
 };
 
-Client.sendDot = function (data) {
-    Client.socket.emit('addDot', data);
+Client.askDot = function (data) {
+    Client.socket.emit('askDot', data);
 };
 
 //*****************FROM SERVER****************************
 Client.socket.on('addDot', function (data) {
-   mainGameState.updateOtherDot(data.id, data.x, data.y); 
+   mainGameState.updateAllDots(data.id, data.x, data.y); 
+    console.log(data.id + " " + data.x + " " + data.y);
 });
 
 Client.socket.on('relaySm', function (otherPlayer) {

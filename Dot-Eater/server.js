@@ -1,4 +1,4 @@
-// Server File -- 3:20 pm 6/19/2017
+// Server File -- 12:22 pm 6/20/2017
 const UP_ARROW = 0;
 const RIGHT_ARROW = 1;
 const DOWN_ARROW = 2;
@@ -56,8 +56,15 @@ io.on('connection', function (socket) {
             socket.broadcast.emit('move', socket.player);
         });
 
-        socket.on('addDot', function (data) {
-            socket.broadcast.emit('addDot', data);
+        this.allServerDots = []; // create server-side array called all Server Dots   
+
+        socket.on('askDot', function (data) {
+            io.emit('addDot', data); // tell clients to add Dots. 
+            //console.log("Sending a dot to all players with the data" + data);
+            var serverDot = {
+                data
+            }; // turn the data into an object to be used by the server
+            this.allServerDots[this.allServerDots.length] = serverDot; // add this object to the allServerDots array
         });
 
         // ***** vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv        
