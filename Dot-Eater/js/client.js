@@ -71,6 +71,7 @@ Client.socket.on('spawnDot', function (data) {
 });
 
 Client.socket.on('removeDot', function (data) {
+    console.log("data received " + data);
     mainGameState.removeDot(data.x, data.y, data.color);
 });
 

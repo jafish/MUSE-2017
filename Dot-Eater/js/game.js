@@ -7,7 +7,8 @@ const UP_ARROW = 0;
 const RIGHT_ARROW = 1;
 const DOWN_ARROW = 2;
 const LEFT_ARROW = 3;
-const MOVEMENT = 7;
+
+var MOVEMENT = 7;
 
 var myPlayerID = -1;
 
@@ -17,9 +18,13 @@ var otherdotIDs = 0;
 var score = 0;
 var scoreText;
 
+var radius = 29.5;
+
+var flip = false;
+
 var game = new Phaser.Game(
-    24 * 32,
-    17 * 32,
+    1000,
+    1000,
     Phaser.AUTO,
     document.getElementById("game"),
     this,
@@ -30,7 +35,7 @@ var game = new Phaser.Game(
 var mainGameState = {};
 
 mainGameState.preload = function () {
-    game.load.image('player', 'assets/sprites/circle3.png');
+    game.load.image('player', 'assets/sprites/circle4.png');
 }
 
 mainGameState.create = function () {
@@ -96,24 +101,28 @@ mainGameState.addNewPlayer = function (id, color, size, x, y) {
     // DONT FORGET THE TEXTURE setCircle expects a radius sized relative to the sprite's texture (i.e. the original image file)
     // Since our circle is 400x400 px, the radius given to setCircle should be 200
 
-    mainGameState.playerList[id].body.setCircle(40);
+    mainGameState.playerList[id].body.setCircle(radius);
 
     // --- End Player Initialization ---
 };
 
 mainGameState.update = function () {
     scoreText.text = 'Score: ' + score;
+
     if (myPlayerID > -1) {
+        // if (flip) {
         game.physics.arcade.overlap(this.playerList[myPlayerID], this.otherDotGroup, this.eatDot);
-    };
 
+    }
+    // } else if (!game.physics.arcade.overlap(this.playerList[myPlayerID], this.otherDotGroup)) {
+    //  flip = true;
+    // }
 
-    // console.log(this.playerList[myPlayerID]);
 
     this.movePlayer();
     this.growCircle();
 
-    if (1000 < game.time.now - this.timeCheck) {
+    if (750 < game.time.now - this.timeCheck) {
         // allow dropDotFn to run
         this.shrinkDotFn();
     }
@@ -161,24 +170,26 @@ mainGameState.shrinkDotFn = function () {
 
 
             //Spawn Dot
-            if (mydotIDs >= 0) {
-                this.myDotObjects[mydotIDs] = game.add.sprite(player.x, player.y, 'player');
+
+            this.myDotObjects[mydotIDs] = game.add.sprite(player.x, player.y, 'player');
+            if (this.myDotObjects[mydotIDs]) {
                 this.myDotObjects[mydotIDs].anchor.setTo(0.5, 0.5);
                 this.myDotObjects[mydotIDs].width = this.myDotObjects[mydotIDs].height = 25;
                 this.myDotObjects[mydotIDs].tint = playercolor;
                 this.myDotObjects[mydotIDs].smoothed = false;
                 game.physics.arcade.enable(this.myDotObjects[mydotIDs]);
-                this.myDotObjects[mydotIDs].body.setCircle(40);
+                this.myDotObjects[mydotIDs].body.setCircle(radius);
                 this.myDotGroup.add(this.myDotObjects[mydotIDs]);
+                console.log(this.myDotGroup.children);
                 Client.sentDotLocation({
-                    x: this.myDotGroup.children[mydotIDs].x,
-                    y: this.myDotGroup.children[mydotIDs].y,
+                    x: this.myDotGroup.children[this.myDotGroup.children.length - 1].x,
+                    y: this.myDotGroup.children[this.myDotGroup.children.length - 1].y,
                     color: playercolor
                 });
-                console.log(mydotIDs);
                 mydotIDs++;
             };
         };
+
     };
 };
 
@@ -189,7 +200,7 @@ mainGameState.spawnOtherDots = function (x, y, color) {
     this.otherDotObjects[otherdotIDs].tint = color;
     this.otherDotObjects[otherdotIDs].smoothed = false;
     game.physics.arcade.enable(this.otherDotObjects[otherdotIDs]);
-    this.otherDotObjects[otherdotIDs].body.setCircle(40);
+    this.otherDotObjects[otherdotIDs].body.setCircle(radius);
     this.otherDotGroup.add(this.otherDotObjects[otherdotIDs]);
     otherdotIDs++;
 };
@@ -200,37 +211,54 @@ mainGameState.eatDot = function (player, dot) {
         y: dot.y,
         color: dot.tint
     });
-    dot.destroy();
-    score++;
+    flip = true;
 };
 
 //This function removes a dot when a player grabs it
 mainGameState.removeDot = function (x, y, color) {
-    //check OTHER dot group
-    var n = 1;
-    for (i = this.otherDotGroup.children.length - 1; i >= 0; i--) {
-        if (this.otherDotGroup.children[i]) {
-            if (this.otherDotGroup.children[i].x == x && this.otherDotGroup.children[i].y == y && this.otherDotGroup.children[i].tint == color) {
-                this.otherDotGroup.children[i].destroy();
-                this.otherDotGroup.children.splice(this.otherDotGroup.children.length - n, 1);
-            } else {
-                n++;
-            };
-        };
-    };
-    //Check YOUR dot group
-    var n = 1;
-    for (i = this.myDotGroup.children.length - 1; i >= 0; i--) {
-        if (this.myDotGroup.children[i].x == x && this.myDotGroup.children[i].y == y && this.myDotGroup.children[i].tint == color) {
+    if (this.playerList[myPlayerID].tint == color) {
+        console.log("the collected dot matches my color");
+        n = 0;
+        for (i = this.myDotGroup.children.length - 1; i >= 0; i--) {
             if (this.myDotGroup.children[i]) {
-                this.myDotGroup.children.splice(this.myDotGroup.children.length - n, 1);
-                this.myDotGroup.children[i].destroy();
-            } else {
-                n++;
+                if (this.myDotGroup.children[i].x == x && this.myDotGroup.children[i].y == y && this.myDotGroup.children[i].tint == color) {
+
+                    // this.myDotGroup.children[i].destroy();
+
+                    console.log("array before " + this.myDotGroup.children);
+                    this.myDotGroup.children[i].destroy();
+                    //this.myDotGroup.children.splice(this.myDotGroup.children.length - n, 1);
+                    console.log("array after " + this.myDotGroup.children);
+                } else {
+                    n++
+                }
             };
-            console.log(mydotIDs);
         };
-    };
+
+    } else {
+
+        var n = 1;
+        for (i = this.otherDotGroup.children.length - 1; i >= 0; i--) {
+            if (this.otherDotGroup.children[i]) {
+                if (this.otherDotGroup.children[i].x == x && this.otherDotGroup.children[i].y == y && this.otherDotGroup.children[i].tint == color) {
+                    //this.otherDotGroup.children[this.otherDotGroup.children.length - n].destroy();
+                    console.log("other array before " + this.otherDotGroup.children);
+
+                    this.otherDotGroup.children[i].destroy();
+                    //this.otherDotGroup.children.splice(this.otherDotGroup.children.length - n, 1)
+
+                    console.log("other array after " + this.otherDotGroup.children);
+                    if (flip) {
+                        score++
+                        flip = false;
+                    }
+                } else {
+                    n++
+                }
+            };
+
+        };
+    }
 };
 
 
@@ -241,20 +269,23 @@ mainGameState.movePlayer = function () {
     if (myPlayerID >= 0) {
         var player = this.playerList[myPlayerID];
         var moved = false;
+        var speed = 480 / player.width;
+
+        game.world.wrap(player, 0, true);
 
         if (this.cursor.right.isDown || this.wasd.right.isDown) {
-            player.x += MOVEMENT;
+            player.x += speed;
             moved = true;
         } else if (this.cursor.left.isDown || this.wasd.left.isDown) {
-            player.x -= MOVEMENT;
+            player.x -= speed;
             moved = true;
         }
 
         if (this.cursor.up.isDown || this.wasd.up.isDown) {
-            player.y -= MOVEMENT;
+            player.y -= speed;
             moved = true;
         } else if (this.cursor.down.isDown || this.wasd.down.isDown) {
-            player.y += MOVEMENT;
+            player.y += speed;
             moved = true;
         }
 
@@ -262,9 +293,11 @@ mainGameState.movePlayer = function () {
             // Send the id and position of the player
             Client.updatePosition({
                 x: player.x,
-                y: player.y
+                y: player.y,
+                size: player.width
             });
         }
+
     }
     // TODO: Fix diagonal too-fast-ness
 
@@ -296,13 +329,10 @@ mainGameState.removePlayer = function (id) {
 mainGameState.removeDots = function (color) {
     var n = 1;
     for (i = this.otherDotGroup.children.length - 1; i >= 0; i--) {
-        console.log(this.otherDotGroup.children[1]);
-        console.log(color);
         if (this.otherDotGroup.children[i]) {
             if (this.otherDotGroup.children[i].tint == color) {
                 this.otherDotGroup.children[i].destroy();
                 this.otherDotGroup.children.splice(this.otherDotGroup.children.length - n, 1);
-                console.log("spliced array game side" + this.otherDotGroup.children);
             } else if (this.otherDotGroup.children[i].tint != color) {
                 n++;
             };

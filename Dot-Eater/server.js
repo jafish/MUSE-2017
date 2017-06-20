@@ -81,16 +81,18 @@ io.on('connection', function (socket) {
 
         socket.on('eatDot', function (data) {
             var n = 1;
+            io.emit('removeDot', data);
             for (var i = httpServer.dotArray.length - 1; i >= 0; i--) {
                 if (httpServer.dotArray[i]) {
                     if (httpServer.dotArray[i].x == data.x && httpServer.dotArray[i].y == data.y && httpServer.dotArray[i].color == data.color) {
+                        console.log("server array before " + httpServer.dotArray);
                         httpServer.dotArray.splice(httpServer.dotArray.length - n, 1);
+                        console.log("server array after " + httpServer.dotArray);
                     } else {
                         n++;
                     };
                 };
             }
-            socket.broadcast.emit('removeDot', data);
         });
 
 
