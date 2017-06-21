@@ -8,7 +8,6 @@ Client.socket = io.connect(address);
 
 Client.askNewPlayer = function () {
     Client.socket.emit('newplayer');
-    //console.log("Sending new player");
 }
 
 Client.updatePosition = function (data) {
@@ -16,7 +15,15 @@ Client.updatePosition = function (data) {
 }
 
 Client.updateSize = function (data) {
-    Client.socket.emit('resize', data)
+    Client.socket.emit('resize', data);
+}
+
+Client.sendDot = function (data) {
+    Client.socket.emit('newdot', data);
+}
+
+Client.consumeDot = function (data) {
+    Client.socket.emit('consumedot', data);
 }
 
 Client.socket.on('newplayer', function (data) {
@@ -25,9 +32,12 @@ Client.socket.on('newplayer', function (data) {
 
 
 Client.socket.on('allplayers', function (data) {
-    //console.log(data);
     for (var i = 0; i < data.length; i++) {
-        mainGameState.addNewPlayer(data[i].id, data[i].color, data[i].size, data[i].x, data[i].y)
+        var playerData = data[i].player;
+        var playerDots = data[i].dots;
+        console.log("Player Data is " + data[i].player);
+        console.log("Dots Data is " + data[i].dots);
+        mainGameState.addNewPlayer(playerData.id, playerData.color, playerData.size, playerData.x, playerData.y, playerDots)
     }
 });
 
@@ -41,6 +51,15 @@ Client.socket.on('move', function (data) {
 
 Client.socket.on('resize', function (data) {
     mainGameState.updateOtherPlayerSize(data.id, data.size);
+});
+
+// TODO: Create receive update dot message(s) - either add or consume
+Client.socket.on('newdot', function (data) {
+    mainGameState.addDot(data);
+});
+
+Client.socket.on('consumedot', function (data) {
+    mainGameState.consumeDot();
 });
 
 Client.socket.on('remove', function (id) {

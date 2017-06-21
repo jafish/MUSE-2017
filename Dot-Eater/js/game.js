@@ -33,15 +33,14 @@ mainGameState.create = function () {
     game.stage.disableVisibilityChange = true;
     this.timeCheck = 0;
 
-    this.playerList = {};
+    this.playerList = [];
 
     //Start the physics
     game.physics.startSystem(Phaser.Physics.ARCADE);
 
-    // Player Initialization has moved to addNewPlayer
-
     // Dots
-    this.dotGroup = game.add.group();
+    this.myDotGroup = game.add.group();
+    this.otherDotGroup = game.add.group();
 
     //Nice dusty lavender background, instead of black.
     game.stage.backgroundColor = "#6d5f77";
@@ -68,20 +67,31 @@ mainGameState.create = function () {
     Client.askNewPlayer();
 };
 
-mainGameState.addNewPlayer = function (id, color, size, x, y) {
+mainGameState.addNewPlayer = function (id, color, size, x, y, dots) {
     // --- Player Initialization ---
-    mainGameState.playerList[id] = game.add.sprite(x, y, 'player');
-    mainGameState.playerList[id].anchor.setTo(0.5, 0.5);
-    mainGameState.playerList[id].width = mainGameState.playerList[id].height = size;
-    mainGameState.playerList[id].tint = color;
-    mainGameState.playerList[id].smoothed = false;
-    mainGameState.playerList[id].alpha = 0.85;
-    game.physics.arcade.enable(mainGameState.playerList[id]);
+    var newPlayerSprite = game.add.sprite(x, y, 'player');
+    newPlayerSprite = game.add.sprite(x, y, 'player');
+    newPlayerSprite.anchor.setTo(0.5, 0.5);
+    newPlayerSprite.width = newPlayerSprite.height = size;
+    newPlayerSprite.tint = color;
+    newPlayerSprite.smoothed = false;
+    newPlayerSprite.alpha = 0.85;
+    game.physics.arcade.enable(newPlayerSprite);
     // DONT FORGET THE TEXTURE setCircle expects a radius sized relative to the sprite's texture (i.e. the original image file)
     // Since our circle is 400x400 px, the radius given to setCircle should be 200
-
-    mainGameState.playerList[id].body.setCircle(200);
+    newPlayerSprite.body.setCircle(200);
+    mainGameState.playerList[id] = newPlayerSprite;
     // --- End Player Initialization ---
+
+    // --- Dots Initialization ---
+    dots.forEach(function (dot) {
+        // Create the dot sprite in the otherDotGroup
+        var newdot = game.add.sprite(dot.x, dot.y, 'player', 0, this.otherDotGroup);
+        newdot.width = newdot.height = DOT_SIZE;
+        newdot.anchor.setTo(0.5, 0.5);
+        newdot.tint = dot.id;
+    });
+    // --- End Dots Initialization ---
 };
 
 mainGameState.update = function () {
@@ -159,10 +169,20 @@ mainGameState.dropDotFn = function () {
             this.timeCheck = game.time.now;
 
             // Drop a dot and add it to the group
-            var newdot = game.add.sprite(player.x, player.y, 'player', 0, this.dotGroup);
+            var newdot = game.add.sprite(player.x, player.y, 'player', 0, this.myDotGroup);
             newdot.width = newdot.height = DOT_SIZE;
             newdot.anchor.setTo(0.5, 0.5);
             newdot.tint = player.tint;
+
+            // Request that the Client send a message to the server
+            // indicating the new dot and its location. Use the tint for
+            // id, making the assumption that if any two dots are overlapping,
+            // we will only choose one of them to remove when dealing with collision
+            Client.sendDot({
+                id: newdot.tint,
+                x: newdot.x,
+                y: newdot.y
+            });
         }
     }
 };
@@ -189,6 +209,14 @@ mainGameState.updateOtherPlayerSize = function (id, size) {
     }
 }
 
+mainGameState.addDot = function (data) {
+    // Add the dot to the other dots group
+    var newdot = game.add.sprite(data.x, data.y, 'player', 0, this.otherDotGroup);
+    newdot.width = newdot.height = DOT_SIZE;
+    newdot.anchor.setTo(0.5, 0.5);
+    newdot.tint = data.id;
+}
+
 mainGameState.setID = function (id) {
     myPlayerID = id;
 }
@@ -199,7 +227,9 @@ mainGameState.removePlayer = function (id) {
 };
 
 mainGameState.render = function () {
-    //game.debug.body(this.player);
+    if (myPlayerID > 0) {
+        game.debug.body(this.playerList[myPlayerID]);
+    }
 }
 
 game.state.add("Game", mainGameState);

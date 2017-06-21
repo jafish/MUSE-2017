@@ -9,9 +9,6 @@ var app = express();
 var httpServer = require('http').Server(app);
 //var io = require('socket.io')(httpServer);
 var io = require('socket.io').listen(httpServer);
-//console.log(io);
-
-//io.set('log level', 1);
 
 app.use('/css', express.static(__dirname + '/css'));
 app.use('/js', express.static(__dirname + '/js'));
@@ -37,6 +34,7 @@ io.on('connection', function (socket) {
 
         var hexColor = ("0x" + rhexString + ghexString + bhexString);
 
+        // Initialize player
         socket.player = {
             id: httpServer.lastPlayerID++,
             color: hexColor,
@@ -44,6 +42,12 @@ io.on('connection', function (socket) {
             x: randomInt(100, 400),
             y: randomInt(100, 400)
         };
+
+        // Is there a way to get other sockets? And look through their dot arrays?
+
+        // Initialize dots
+        socket.dots = [];
+
 
         socket.emit('allplayers', getAllPlayers());
         socket.emit('you', socket.player.id);
@@ -62,8 +66,16 @@ io.on('connection', function (socket) {
             // Update this player's recorded size in server's socket object
             // Then, send a message to all clients to update their copies of this player
             socket.player.size = data;
+            // TODO - Do I really need to send the whole player here?
             socket.broadcast.emit('resize', socket.player);
         });
+
+        socket.on('newdot', function (data) {
+            // 1. Add the dot to my socket's dot list
+            socket.dots.push(data);
+            // 2. Broadcast the new dot to the other clients
+            socket.broadcast.emit('newdot', data);
+        })
 
         socket.on('disconnect', function () {
             io.emit('remove', socket.player.id);
@@ -75,8 +87,12 @@ function getAllPlayers() {
     var collectedPlayers = [];
     Object.keys(io.sockets.connected).forEach(function (socketID) {
         var currentPlayer = io.sockets.connected[socketID].player;
+        var currentDots = io.sockets.connected[socketID].dots;
         if (currentPlayer != null) {
-            collectedPlayers.push(currentPlayer);
+            collectedPlayers.push({
+                player: currentPlayer,
+                dots: currentDots
+            })
         }
     });
     return collectedPlayers;
