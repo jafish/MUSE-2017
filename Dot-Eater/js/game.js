@@ -1,4 +1,4 @@
-// Game File -- 3:45 pm 6/20/2017
+// Game File -- 10:15 am 6/21/2017
 
 const DOT_SIZE = 10;
 const UP_ARROW = 0;
@@ -88,7 +88,7 @@ mainGameState.addNewPlayer = function (id, color, size, x, y) {
     // --- End Player Initialization ---
 };
 
-mainGameState.addNewDot = function (id, x, y) {
+mainGameState.addExistingDots = function (id, x, y) {
     var newDot = game.add.sprite(x, y, 'player', 0, this.allDotGroup); // all (existing) dots belong to the allDotGroup
     newDot.width = newDot.height = DOT_SIZE;
     newDot.anchor.setTo(0.5, 0.5);
@@ -98,14 +98,6 @@ mainGameState.addNewDot = function (id, x, y) {
     this.allDots[this.allDots.length] = newDot; // add the newDot to the end of an array called allDots
 };
 
-mainGameState.updateAllDots = function (id, x, y) {
-    // all the normal dot dropping stuff, with the exception of making the tint based on the id, and the x and y coordinates are sent from the dot-dropper. 
-    var newDot = game.add.sprite(x, y, 'player', 0, this.allDotGroup); // define this newDot as belonging to the allDotGroup
-    newDot.width = newDot.height = DOT_SIZE; // size is based on the constant at the top of game.js
-    newDot.anchor.setTo(0.5, 0.5); // set anchor to the center of the dot
-    newDot.tint = id; // tint is based on player id that sent the dot
-}; 
-
 mainGameState.update = function () {
     this.movePlayer();
     this.growCircle();
@@ -114,7 +106,7 @@ mainGameState.update = function () {
         this.dropDotFn();
     }
 
-    this.addNewDot();
+    this.addExistingDots();
     this.updateAllDots();
     this.updateOtherSizes();
 };
@@ -169,6 +161,14 @@ mainGameState.dropDotFn = function () {
         } //closes: if myPlayerID
     } //closes: if the dotButton is pressed
 }; //closes dropDotFn
+
+mainGameState.updateAllDots = function (id, x, y) {
+    // all the normal dot dropping stuff, with the exception of making the tint based on the id, and the x and y coordinates are sent from the dot-dropper. 
+    var newDot = game.add.sprite(x, y, 'player', 0, this.allDotGroup); // define this newDot as belonging to the allDotGroup
+    newDot.width = newDot.height = DOT_SIZE; // size is based on the constant at the top of game.js
+    newDot.anchor.setTo(0.5, 0.5); // set anchor to the center of the dot
+    newDot.tint = id; // tint is based on player id that sent the dot
+}; 
 
 //This function moves our circle player
 mainGameState.movePlayer = function () {

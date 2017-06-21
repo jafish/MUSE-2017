@@ -1,4 +1,4 @@
-// Server File -- 3:45 pm 6/20/2017
+// Server File -- 10:15 am 6/21/2017
 const UP_ARROW = 0;
 const RIGHT_ARROW = 1;
 const DOWN_ARROW = 2;
@@ -43,10 +43,10 @@ io.on('connection', function (socket) {
             x: randomInt(100, 400),
             y: randomInt(100, 400)
         };
-        socket.emit('allplayers', getAllPlayers()); // all online users are collected into an array by getAllPlayers function and are shown to the newest player
+        socket.emit('existingPlayers', getAllPlayers()); // all online users are collected into an array by getAllPlayers function and are shown to the newest player
 
         socket.emit('existingDots', allServerDots); // Based on allplayers, I assume that arrays can be relayed to the Client. 
-        console.log(allServerDots); // ERR: UNDEFINED
+        console.log(allServerDots);
 
         socket.emit('you', socket.player.id); // assign your id to yourself
         socket.broadcast.emit('newplayer', socket.player); // existing players will receive {id, color, size, x, y} of new player
@@ -82,15 +82,18 @@ io.on('connection', function (socket) {
         socket.on('disconnect', function () {
             io.emit('remove', socket.player.id);
             console.log("Player disconnected.");
+            console.log(socket.player.id);
             
             // Upon disconnect, check disconnecting player's tint.
-            var disconnectedColor = theirColor(socket.player.id); //is .id needed?***
+            var disconnectedColor = socket.player.color;
+            console.log(disconnectedColor);
+            
             var n = 1;
-
             // Find all dots of that tint and delete them from allServerDots array.
             for (i = allServerDots.length - n; i >= 0; i--) { // Go through the whole allServerDots array, where i is the index number.
-                if (allServerDots[i].tint == disconnectedColor) { // If the tint of the tint of allServerDots at this index number is the same as the disconnected color, ...
-                    allServerDots.splice(length - n, 1); // ...splice just that index.
+                if (allServerDots[i].id == disconnectedColor) { // If the tint of the tint of allServerDots at this index number is the same as the disconnected color, ...
+                    console.log(allServerDots[i].id);
+                    allServerDots.splice(allServerDots.length - n, 1); // ...splice just that index.
                 } else { // otherwise, increase n and check the next part of the index.
                     n++;
                 }
@@ -113,9 +116,3 @@ function getAllPlayers() {
 function randomInt(low, high) {
     return Math.floor(Math.random() * (high - low) + low);
 };
-
-function theirColor(id) { //A function that takes a player object as an argument (called id) and returns that object's tint.
-    var player = socket.player;
-    return player.tint;
-    
-}

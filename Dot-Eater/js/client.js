@@ -1,4 +1,4 @@
-// Client File -- 3:45 pm 6/20/2017
+// Client File -- 10:15 am 6/21/2017
 
 // For server, need to add + ":8081" to address until we figure out what is going on with socket.io
 // *** EDIT: Robin's version is running on port 8137.***
@@ -47,7 +47,7 @@ Client.socket.on('newplayer', function (data) {
     mainGameState.addNewPlayer(data.id, data.color, data.size, data.x, data.y);
 });
 
-Client.socket.on('allplayers', function (data) {
+Client.socket.on('existingPlayers', function (data) {
     for (var i = 0; i < data.length; i++) {
         mainGameState.addNewPlayer(data[i].id, data[i].color, data[i].size, data[i].x, data[i].y)
     }
@@ -55,7 +55,7 @@ Client.socket.on('allplayers', function (data) {
 
 Client.socket.on('existingDots', function (data) {
     for (var i = 0; i < data.length; i++) {
-        mainGameState.addNewDot(data[i].id, data[i].x, data[i].y)
+        mainGameState.addExistingDots(data[i].id, data[i].x, data[i].y)
     }
 }); // The above function is intended to pull dot colors and locations from the allServerDots array, which is handed off from the server.
 
