@@ -66,6 +66,18 @@ io.on('connection', function (socket) {
             console.log(allServerDots); // displays all current dots in the server console
         });
 
+        socket.on('eatDot', function (data) {
+            var n = 1;
+            for (i = allServerDots.length - 1; i >= 0; i--) {
+                if (allServerDots[i].x == data.x && allServerDots[i].y == data.y) {
+                    allServerDots.splice(allServerDots.length - n, 1);
+                    console.log("omnomnom");
+                } else {
+                    n++;
+                }
+            }
+        });
+
         socket.on('sendSm', function (playerHeight) {
             socket.player.height = playerHeight.size;
             socket.broadcast.emit('relaySm', socket.player);

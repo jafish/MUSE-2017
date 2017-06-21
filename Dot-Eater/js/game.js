@@ -1,4 +1,4 @@
-// Game File -- 12:20 pm 6/21/2017
+// Game File -- 1:48 pm 6/21/2017
 
 const DOT_SIZE = 10;
 const UP_ARROW = 0;
@@ -38,14 +38,12 @@ mainGameState.create = function () {
     game.stage.backgroundColor = "#6d5f77";
 
     // Dots
-    this.allDotGroup = game.add.group();
     this.dropSound = game.add.audio('drop');
+    this.allDots = [];
+    this.foreignDots = [];
 
     // Players
     this.playerList = {};
-
-    // Dot Array
-    this.allDots = [];
 
     // KEY INPUTS
     // Arrow keys and spacebar only affect game.
@@ -88,28 +86,35 @@ mainGameState.addNewPlayer = function (id, color, size, x, y) {
 
 // *******************************************************
 mainGameState.addExistingDots = function (id, x, y) {
-    var newDot = game.add.sprite(x, y, 'player', 0, this.allDotGroup); // all (existing) dots belong to the allDotGroup
+    var newDot = game.add.sprite(x, y, 'player');
     newDot.width = newDot.height = DOT_SIZE;
     newDot.anchor.setTo(0.5, 0.5);
-
     newDot.tint = id;
+    game.physics.arcade.enable(newDot);
+    //newDot.body.setCircle(200);
+
 
     //this.dropSound.play(); // play a sound when a dot is dropped
 
     this.allDots[this.allDots.length] = newDot; // add the newDot to the end of an array called allDots
+    this.foreignDots[this.foreignDots.length] = newDot; // all pre-existing dots are foreign.
 };
 
 mainGameState.update = function () {
+    game.physics.arcade.overlap(this.playerList[myPlayerID], this.foreignDots, this.eatDot, null, this); //an overlap between this player and members of the foreign dots group will trigger this.eatDot.
+
     this.movePlayer();
     this.growCircle();
-
     if (1000 < game.time.now - this.timeCheck) {
         this.dropDotFn();
     }
+};
 
-    //this.addExistingDots();
-    //this.updateAllDots();
-    this.updateOtherSizes();
+mainGameState.eatDot = function (mySelf, foreignDot) {
+    if (myPlayerID >= 0) {
+        console.log("My player ID is valid.")
+        Client.eatPlease(foreignDot.x, foreignDot.y);
+    }
 };
 
 mainGameState.growCircle = function () {
@@ -156,12 +161,21 @@ mainGameState.dropDotFn = function () {
 
 mainGameState.updateAllDots = function (id, x, y) {
     // all the normal dot dropping stuff, with the exception of making the tint based on the id, and the x and y coordinates are sent from the dot-dropper. 
-    var newDot = game.add.sprite(x, y, 'player', 0, this.allDotGroup); // define this newDot as belonging to the allDotGroup
+    var newDot = game.add.sprite(x, y, 'player');
     newDot.width = newDot.height = DOT_SIZE; // size is based on the constant at the top of game.js
     newDot.anchor.setTo(0.5, 0.5); // set anchor to the center of the dot
     newDot.tint = id; // tint is based on player id that sent the dot
-    
+    game.physics.arcade.enable(newDot);
+    //newDot.body.setCircle(200);
+
+
     this.allDots[this.allDots.length] = newDot; // add the newDot to the end of an array called allDots
+
+    if (myPlayerID >= 0) {
+        if (id !== this.playerList[myPlayerID].tint) {
+            this.foreignDots[this.foreignDots.length] = newDot; // This is successfully adding other players' dots to the foreignDots array.
+        }
+    }
 };
 
 //This function moves our circle player
@@ -246,7 +260,9 @@ mainGameState.removeDisconnectedDots = function (color) {
 };
 
 mainGameState.render = function () {
-    //game.debug.body(this.player);
+    if (myPlayerID >= 0) {
+        game.debug.body(this.playerList[myPlayerID]);
+    }
 };
 
 game.state.add("Game", mainGameState);

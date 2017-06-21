@@ -27,6 +27,10 @@ Client.askDot = function (data) {
     Client.socket.emit('askDot', data);
 };
 
+Client.eatPlease = function (data) {
+    Client.socket.emit('eatDot', data);  
+};
+
 //*****************FROM SERVER******************
 Client.socket.on('addDot', function (data) {
     mainGameState.updateAllDots(data.id, data.x, data.y);
