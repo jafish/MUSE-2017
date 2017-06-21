@@ -70,7 +70,6 @@ mainGameState.create = function () {
 mainGameState.addNewPlayer = function (id, color, size, x, y, dots) {
     // --- Player Initialization ---
     var newPlayerSprite = game.add.sprite(x, y, 'player');
-    newPlayerSprite = game.add.sprite(x, y, 'player');
     newPlayerSprite.anchor.setTo(0.5, 0.5);
     newPlayerSprite.width = newPlayerSprite.height = size;
     newPlayerSprite.tint = color;

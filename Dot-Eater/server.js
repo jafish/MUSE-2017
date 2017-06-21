@@ -43,15 +43,12 @@ io.on('connection', function (socket) {
             y: randomInt(100, 400)
         };
 
-        // Is there a way to get other sockets? And look through their dot arrays?
-
         // Initialize dots
         socket.dots = [];
 
 
         socket.emit('allplayers', getAllPlayers());
         socket.emit('you', socket.player.id);
-        //console.log(getAllPlayers());
         socket.broadcast.emit('newplayer', socket.player);
 
         socket.on('move', function (data) {
