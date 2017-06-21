@@ -1,4 +1,4 @@
-// Game File -- 10:15 am 6/21/2017
+// Game File -- 12:20 pm 6/21/2017
 
 const DOT_SIZE = 10;
 const UP_ARROW = 0;
@@ -38,9 +38,7 @@ mainGameState.create = function () {
     game.stage.backgroundColor = "#6d5f77";
 
     // Dots
-    this.dotGroup = game.add.group();
     this.allDotGroup = game.add.group();
-
     this.dropSound = game.add.audio('drop');
 
     // Players
@@ -88,11 +86,14 @@ mainGameState.addNewPlayer = function (id, color, size, x, y) {
     // --- End Player Initialization ---
 };
 
+// *******************************************************
 mainGameState.addExistingDots = function (id, x, y) {
     var newDot = game.add.sprite(x, y, 'player', 0, this.allDotGroup); // all (existing) dots belong to the allDotGroup
     newDot.width = newDot.height = DOT_SIZE;
     newDot.anchor.setTo(0.5, 0.5);
+
     newDot.tint = id;
+
     //this.dropSound.play(); // play a sound when a dot is dropped
 
     this.allDots[this.allDots.length] = newDot; // add the newDot to the end of an array called allDots
@@ -106,8 +107,8 @@ mainGameState.update = function () {
         this.dropDotFn();
     }
 
-    this.addExistingDots();
-    this.updateAllDots();
+    //this.addExistingDots();
+    //this.updateAllDots();
     this.updateOtherSizes();
 };
 
@@ -127,9 +128,6 @@ mainGameState.growCircle = function () {
 mainGameState.dropDotFn = function () {
     if (this.dotButton.dropDot.isDown && this.playerList[myPlayerID].width > 60) {
         if (myPlayerID >= 0) {
-
-            console.log("The dropDot button is down, and the player is large enough to drop a dot.")
-
             // Perform a timeCheck for the delay.
             this.timeCheck = game.time.now;
             var dropped = false; // set initial value of dropped to false
@@ -143,20 +141,14 @@ mainGameState.dropDotFn = function () {
 
             dropped = true; // change dropped to true
 
-            console.log(dropped);
-
             // Send an object containing the player color and x/y positions.
             if (dropped) {
-
-                console.log("Preparing to ask server to add dot where I am.");
-
                 Client.askDot( //recursion error
                     {
                         id: playerColor,
                         x: this.playerList[myPlayerID].x,
                         y: this.playerList[myPlayerID].y
                     }); //closes: askDot function
-                console.log("Successfully executed askDot."); // Unexpected identifier
             } //closes: if dropped
         } //closes: if myPlayerID
     } //closes: if the dotButton is pressed
@@ -168,7 +160,9 @@ mainGameState.updateAllDots = function (id, x, y) {
     newDot.width = newDot.height = DOT_SIZE; // size is based on the constant at the top of game.js
     newDot.anchor.setTo(0.5, 0.5); // set anchor to the center of the dot
     newDot.tint = id; // tint is based on player id that sent the dot
-}; 
+    
+    this.allDots[this.allDots.length] = newDot; // add the newDot to the end of an array called allDots
+};
 
 //This function moves our circle player
 mainGameState.movePlayer = function () {
@@ -232,6 +226,23 @@ mainGameState.setID = function (id) {
 mainGameState.removePlayer = function (id) {
     this.playerList[id].destroy();
     delete this.playerList[id];
+};
+
+mainGameState.removeDisconnectedDots = function (color) {
+    var n = 1;
+    for (i = this.allDots.length - n; i >= 0; i--) {
+        if (this.allDots[i]) {
+            console.log(this.allDots[i].tint); // Show the tint of the current dot in the console.
+            if (this.allDots[i].tint == color) {
+                console.log("The tint is equal to the color.")
+                // Destroy the dot sprite and remove it from the array.
+                this.allDots[this.allDots.length - n].destroy();
+                this.allDots.splice(this.allDots.length - n, 1);
+            } else {
+                n++;
+            }
+        }
+    }
 };
 
 mainGameState.render = function () {

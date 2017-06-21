@@ -1,6 +1,5 @@
-// Client File -- 10:15 am 6/21/2017
+// Client File -- 12:20 pm 6/21/2017
 
-// For server, need to add + ":8081" to address until we figure out what is going on with socket.io
 // *** EDIT: Robin's version is running on port 8137.***
 var address = window.location.origin + ":8137";
 
@@ -30,13 +29,12 @@ Client.askDot = function (data) {
 
 //*****************FROM SERVER******************
 Client.socket.on('addDot', function (data) {
-   console.log("addDot was triggered in Client.")
-    mainGameState.updateAllDots(data.id, data.x, data.y); 
+    mainGameState.updateAllDots(data.id, data.x, data.y);
     console.log(data.id + " " + data.x + " " + data.y);
 });
 
 Client.socket.on('relaySm', function (otherPlayer) {
-   mainGameState.updateOtherSizes(otherPlayer.size, otherPlayer.id);
+    mainGameState.updateOtherSizes(otherPlayer.size, otherPlayer.id);
 });
 
 Client.socket.on('relayBi', function (otherPlayer) {
@@ -57,7 +55,7 @@ Client.socket.on('existingDots', function (data) {
     for (var i = 0; i < data.length; i++) {
         mainGameState.addExistingDots(data[i].id, data[i].x, data[i].y)
     }
-}); // The above function is intended to pull dot colors and locations from the allServerDots array, which is handed off from the server.
+}); // The above function pulls dot colors and locations from the allServerDots array.
 
 Client.socket.on('you', function (data) {
     mainGameState.setID(data);
@@ -69,4 +67,8 @@ Client.socket.on('move', function (data) {
 
 Client.socket.on('remove', function (id) {
     mainGameState.removePlayer(id);
+});
+
+Client.socket.on('disconnectedDots', function (color) {
+    mainGameState.removeDisconnectedDots(color);
 });
