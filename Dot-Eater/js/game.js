@@ -23,8 +23,8 @@ var radius = 29.5;
 var flip = false;
 
 var game = new Phaser.Game(
-    1000,
-    1000,
+    800,
+    800,
     Phaser.AUTO,
     document.getElementById("game"),
     this,
@@ -225,11 +225,10 @@ mainGameState.removeDot = function (x, y, color) {
             if (this.myDotGroup.children[i]) {
                 if (this.myDotGroup.children[i].x == x && this.myDotGroup.children[i].y == y && this.myDotGroup.children[i].tint == color) {
 
-                    // this.myDotGroup.children[i].destroy();
 
                     console.log("array before " + this.myDotGroup.children);
                     this.myDotGroup.children[i].destroy();
-                    //this.myDotGroup.children.splice(this.myDotGroup.children.length - n, 1);
+
                     console.log("array after " + this.myDotGroup.children);
                 } else {
                     n++
@@ -243,12 +242,11 @@ mainGameState.removeDot = function (x, y, color) {
         for (i = this.otherDotGroup.children.length - 1; i >= 0; i--) {
             if (this.otherDotGroup.children[i]) {
                 if (this.otherDotGroup.children[i].x == x && this.otherDotGroup.children[i].y == y && this.otherDotGroup.children[i].tint == color) {
-                    //this.otherDotGroup.children[this.otherDotGroup.children.length - n].destroy();
+                    this.otherDotGroup.children[i].visible = false;
+
                     console.log("other array before " + this.otherDotGroup.children);
 
                     this.otherDotGroup.children[i].destroy();
-                    //this.otherDotGroup.children.splice(this.otherDotGroup.children.length - n, 1)
-
                     console.log("other array after " + this.otherDotGroup.children);
                     if (flip) {
                         score++
@@ -275,18 +273,62 @@ mainGameState.movePlayer = function () {
 
         game.world.wrap(player, 0, true);
 
-        if (this.cursor.right.isDown || this.wasd.right.isDown) {
+        //RIGHT first movement
+
+        if ((this.cursor.right.isDown || this.wasd.right.isDown) && (this.cursor.up.isDown || this.wasd.up.isDown)) {
+            player.x += speed / 2;
+            player.y -= speed / 2;
+            moved = true;
+        } else if ((this.cursor.right.isDown || this.wasd.right.isDown) && (this.cursor.down.isDown || this.wasd.down.isDown)) {
+            player.x += speed / 2;
+            player.y += speed / 2;
+            moved = true;
+        } else if ((this.cursor.right.isDown || this.wasd.right.isDown) && !this.cursor.up.isDown && !this.wasd.up.isDown && !this.cursor.down.isDown && !this.wasd.down.isDown) {
             player.x += speed;
             moved = true;
-        } else if (this.cursor.left.isDown || this.wasd.left.isDown) {
+        }
+
+        //Left first movement
+
+        if ((this.cursor.left.isDown || this.wasd.left.isDown) && (this.cursor.up.isDown || this.wasd.up.isDown)) {
+            player.x -= speed / 2;
+            player.y -= speed / 2;
+            moved = true;
+        } else if ((this.cursor.left.isDown || this.wasd.left.isDown) && (this.cursor.down.isDown || this.wasd.down.isDown)) {
+            player.x -= speed / 2;
+            player.y += speed / 2;
+            moved = true;
+        } else if ((this.cursor.left.isDown || this.wasd.left.isDown) && !this.cursor.up.isDown && !this.wasd.up.isDown && !this.cursor.down.isDown && !this.wasd.down.isDown) {
             player.x -= speed;
             moved = true;
         }
 
-        if (this.cursor.up.isDown || this.wasd.up.isDown) {
+        //UP first movement
+
+        if ((this.cursor.up.isDown || this.wasd.up.isDown) && (this.cursor.right.isDown || this.wasd.right.isDown)) {
+            player.x += speed / 2;
+            player.y -= speed / 2;
+            moved = true;
+        } else if ((this.cursor.up.isDown || this.wasd.up.isDown) && (this.cursor.left.isDown || this.wasd.left.isDown)) {
+            player.x -= speed / 2;
+            player.y -= speed / 2;
+            moved = true;
+        } else if ((this.cursor.up.isDown || this.wasd.up.isDown) && !this.cursor.right.isDown && !this.wasd.right.isDown && !this.cursor.left.isDown && !this.wasd.left.isDown) {
             player.y -= speed;
             moved = true;
-        } else if (this.cursor.down.isDown || this.wasd.down.isDown) {
+        }
+
+        //DOWN first movement
+
+        if ((this.cursor.down.isDown || this.wasd.down.isDown) && (this.cursor.right.isDown || this.wasd.right.isDown)) {
+            player.x += speed / 2;
+            player.y += speed / 2;
+            moved = true;
+        } else if ((this.cursor.down.isDown || this.wasd.down.isDown) && (this.cursor.left.isDown || this.wasd.left.isDown)) {
+            player.x -= speed / 2;
+            player.y += speed / 2;
+            moved = true;
+        } else if ((this.cursor.down.isDown || this.wasd.down.isDown) && !this.cursor.right.isDown && !this.wasd.right.isDown && !this.cursor.left.isDown && !this.wasd.left.isDown) {
             player.y += speed;
             moved = true;
         }
