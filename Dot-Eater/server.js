@@ -24,7 +24,7 @@ app.get('/', function (req, res) {
 httpServer.lastPlayerID = 0;
 httpServer.dotArray = [];
 
-httpServer.listen(8081, function () {
+httpServer.listen(8082, function () {
     console.log('Listening on ' + httpServer.address().port);
 });
 

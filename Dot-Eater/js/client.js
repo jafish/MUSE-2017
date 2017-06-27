@@ -1,6 +1,6 @@
 // For server, need to add + ":8081" to address until we figure
 // out WTF is going on with socket.io
-var address = window.location.origin + ":8081";
+var address = window.location.origin + ":8082";
 
 var Client = {};
 Client.socket = io.connect(address);
