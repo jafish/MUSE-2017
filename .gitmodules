@@ -4,3 +4,6 @@
 [submodule "Orchard"]
 	path = Orchard
 	url = https://github.com/fpg246/Orchard
+[submodule "Lighting-Bugs-Fireflies"]
+	path = Lighting-Bugs-Fireflies
+	url = git@github.com:jafish/Lightning-Bugs-Fireflies.git
